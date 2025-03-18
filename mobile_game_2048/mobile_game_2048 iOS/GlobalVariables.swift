@@ -43,9 +43,9 @@ class GlobalSettings {
     }
     
     func setupBackButton(for screenSize: CGSize) { //red X back button, CURRENTLY PRESENT ON OPEN - SHOULDNT BE
-        let buttonWidth: CGFloat = 35
-        let buttonHeight: CGFloat = 35
-        let buttonX = screenSize.width - buttonWidth - 10 // 20 points from the right edge
+        let buttonWidth: CGFloat = 60
+        let buttonHeight: CGFloat = 60
+        let buttonX = screenSize.width - buttonWidth + 10// 20 points from the right edge
         let buttonY = screenSize.height - buttonHeight - 10 // 20 points from the top edge
         
         // Create the back button as an SKSpriteNode using your image "BackButton.png"
