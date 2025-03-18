@@ -26,4 +26,23 @@ class StoreScene: SKScene {
         storeBackground.zPosition = 0
         addChild(storeBackground)
     }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        let location = touch.location(in: self)
+        
+        let backButton = mobile_game_2048.GlobalSettings.shared.backButton
+        
+        if backButton!.contains(location){
+            GlobalSettings.shared.playTransitionAudio() // Play transition sound
+            let startScene = StartScene(size: size)
+            let transition = SKTransition.fade(withDuration: 1.0)
+            view?.presentScene(startScene, transition: transition)
+            
+            // Ensure the audio stops when the transition is done
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+               GlobalSettings.shared.stopTransitionAudio() // Stop transition audio after 1 second
+            }
+        }
+        
+    }
 }

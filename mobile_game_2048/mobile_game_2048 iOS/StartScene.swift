@@ -93,7 +93,6 @@ class StartScene: SKScene{
         }
         let optionsbutton = mobile_game_2048.GlobalSettings.shared.optionsbutton
         if optionsbutton.contains(location) {
-            print("OPTION CLICKED")
             GlobalSettings.shared.playTransitionAudio() // Play transition sound
             let OptionScene = OptionsScene(size: size)
             OptionScene.scaleMode = scaleMode
