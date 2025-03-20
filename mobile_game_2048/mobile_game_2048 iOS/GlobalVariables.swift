@@ -15,6 +15,8 @@ class GlobalSettings {
     
     var backButton: SKSpriteNode!
     
+    var coinIcon: SKSpriteNode!
+    
     var startbutton: CGRect = .zero
     
     var storebutton: CGRect = .zero
@@ -53,5 +55,18 @@ class GlobalSettings {
         backButton.size = CGSize(width: buttonWidth, height: buttonHeight)
         backButton.position = CGPoint(x: buttonX, y: buttonY)
         backButton.zPosition = 1 // Ensure it's on top of other content
+    }
+    func setupCoinRegion(for screenSize: CGSize) { //red X back button, CURRENTLY PRESENT ON OPEN - SHOULDNT BE
+        let buttonWidth: CGFloat = 200
+        let buttonHeight: CGFloat = 50
+        let iconX = screenSize.width - buttonWidth // 20 points from the right edge
+        let iconY = screenSize.height - buttonHeight - 10 // 20 points from the top edge
+        
+        // Create the back button as an SKSpriteNode using your image "BackButton.png"
+        coinIcon = SKSpriteNode(imageNamed: "CoinIcon")
+        coinIcon.size = CGSize(width: buttonWidth, height: buttonHeight)
+        coinIcon.position = CGPoint(x: iconX, y: iconY)
+         // Ensure it's on top of other content
+
     }
 }

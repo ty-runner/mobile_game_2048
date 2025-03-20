@@ -25,6 +25,9 @@ class StoreScene: SKScene {
         storeBackground.size = CGSize(width: size.width, height: size.height)
         storeBackground.zPosition = 0
         addChild(storeBackground)
+        let coinRegion = CoinRegion(coins: GameData.shared.coins)
+        coinRegion.position = CGPoint(x: 100, y: size.height - 50)
+        addChild(coinRegion)
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }

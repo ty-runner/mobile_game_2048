@@ -14,12 +14,15 @@ class OptionsScene: SKScene {
     let OptionScene = SKSpriteNode(imageNamed: "OptionsScene")
     
     override func didMove(to view: SKView) {
-        
         OptionScene.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
         
         OptionScene.size = CGSize(width: size.width, height: size.height)
         OptionScene.zPosition = 0
         addChild(OptionScene)
+        let coinRegion = CoinRegion(coins: GameData.shared.coins)
+        coinRegion.position = CGPoint(x: 100, y: size.height - 50)
+        addChild(coinRegion)
+        
         
         /*
         let debugRect = SKShapeNode(rect: BackButton)
@@ -36,7 +39,8 @@ class OptionsScene: SKScene {
         let location = touch.location(in: self)
         
         let backButton = mobile_game_2048.GlobalSettings.shared.backButton
-        
+        //let plusButton = plusButton
+        //let minusButton = minusButton
         if backButton!.contains(location){
             GlobalSettings.shared.playTransitionAudio() // Play transition sound
             let startScene = StartScene(size: size)
@@ -50,4 +54,5 @@ class OptionsScene: SKScene {
         }
         
     }
+    
 }
