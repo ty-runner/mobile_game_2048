@@ -62,6 +62,7 @@ class StartScene: SKScene{
         
         let startbutton = mobile_game_2048.GlobalSettings.shared.startbutton
         if startbutton.contains(location) {
+            print("Start button Clicked - Transitioning to GameScene")
             GlobalSettings.shared.playTransitionAudio() // Play transition sound
             let gameScene = GameScene(size: size)
             gameScene.viewController = self.viewController
