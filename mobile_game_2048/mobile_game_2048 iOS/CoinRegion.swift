@@ -33,6 +33,9 @@ class CoinRegion: SKNode {
 
         // Coin Count Label
         coinLabel = SKLabelNode(fontNamed: "Arial-BoldMT")
+        if coinLabel.fontName == nil { // Fallback if font is unavailable
+            coinLabel.fontName = "Helvetica-Bold"
+        }
         coinLabel.text = "\(coins)"
         coinLabel.fontSize = 20
         coinLabel.fontColor = .white
@@ -46,7 +49,8 @@ class CoinRegion: SKNode {
     }
     // Function to update coin count
     func updateCoins(to newCount: Int) {
-        coinLabel.text = "\(newCount)"
-        GameData.shared.coins = newCount
+        let clampedCount = max(0, newCount) // Prevent negative coin count
+        coinLabel.text = "\(clampedCount)"
+        GameData.shared.coins = clampedCount
     }
 }
