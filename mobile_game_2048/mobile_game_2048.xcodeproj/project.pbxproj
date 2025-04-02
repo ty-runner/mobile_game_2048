@@ -20,6 +20,8 @@
 				Assets.xcassets,
 				GameScene.sks,
 				GameScene.swift,
+				Music/backgroundMusic.mp3,
+				Music/glasshit.mp3,
 			);
 			target = 1D34416C2D825B820027D2F0 /* mobile_game_2048 iOS */;
 		};
@@ -30,6 +32,8 @@
 				Assets.xcassets,
 				GameScene.sks,
 				GameScene.swift,
+				Music/backgroundMusic.mp3,
+				Music/glasshit.mp3,
 			);
 			target = 1D34417D2D825B820027D2F0 /* mobile_game_2048 tvOS */;
 		};
@@ -40,6 +44,8 @@
 				Assets.xcassets,
 				GameScene.sks,
 				GameScene.swift,
+				Music/backgroundMusic.mp3,
+				Music/glasshit.mp3,
 			);
 			target = 1D34418D2D825B820027D2F0 /* mobile_game_2048 macOS */;
 		};

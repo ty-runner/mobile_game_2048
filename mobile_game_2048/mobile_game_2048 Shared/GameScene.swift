@@ -6,6 +6,8 @@
 //
 
 import SpriteKit
+import Foundation
+import AVFoundation
 
 class GameScene: SKScene {
     
@@ -14,6 +16,16 @@ class GameScene: SKScene {
     let background = SKSpriteNode(imageNamed: "background")
     
     override func didMove(to view: SKView) {
+        
+        GlobalSettings.shared.setupAudio() 
+        
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: .mixWithOthers)
+            try? AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("Failed to set up AVAudioSession: \(error)")
+        }
         
         background.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
         
@@ -26,6 +38,8 @@ class GameScene: SKScene {
         // Called before each frame is rendered
     }
 }
+
+/*
 
 #if os(iOS) || os(tvOS)
 // Touch-based event handling
@@ -66,4 +80,5 @@ extension GameScene {
 
 }
 #endif
+*/
 

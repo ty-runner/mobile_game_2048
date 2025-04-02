@@ -32,17 +32,18 @@ class StartScene: SKScene{
         
         
         let startButtonX = (size.width - buttonWidth) / 2 // Centered horizontally
-        let startButtonY = size.height * 0.53 // Position based on percentage of screen height
+        let startButtonY = size.height * 0.50 // Position based on percentage of screen height
         GlobalSettings.shared.startbutton = CGRect(x: startButtonX, y: startButtonY, width: buttonWidth, height: buttonHeight)
         
         let storeButtonX = (size.width - buttonWidth) / 2 // Centered horizontally
-        let storeButtonY = size.height * 0.40 // Position based on percentage of screen height
+        let storeButtonY = size.height * 0.30 // Position based on percentage of screen height
         GlobalSettings.shared.storebutton = CGRect(x: storeButtonX, y: storeButtonY, width: buttonWidth, height: buttonHeight)
+        
         let optionsButtonX = (size.width - buttonWidth) / 2 // Centered horizontally
-        let optionsButtonY = size.height * 0.30 // Position based on percentage of screen height
+        let optionsButtonY = size.height * 0.15 // Position based on percentage of screen height
         GlobalSettings.shared.optionsbutton = CGRect(x: optionsButtonX, y: optionsButtonY, width: buttonWidth, height: buttonHeight)
         
-        addChild(GlobalSettings.shared.backButton)
+        //addChild(GlobalSettings.shared.backButton)
         
         /*
          //debugging for Startbuttons Area
@@ -79,6 +80,7 @@ class StartScene: SKScene{
         
         let storebutton = mobile_game_2048.GlobalSettings.shared.storebutton
         if storebutton.contains(location) {
+            print("Store CLICKED")
             GlobalSettings.shared.playTransitionAudio() // Play transition sound
             let storeScene = StoreScene(size: size)
             storeScene.scaleMode = scaleMode
@@ -94,6 +96,7 @@ class StartScene: SKScene{
         
         let optionsbutton = mobile_game_2048.GlobalSettings.shared.optionsbutton
         if optionsbutton.contains(location) {
+            print("Option CLICKED")
             GlobalSettings.shared.playTransitionAudio() // Play transition sound
             let OptionScene = OptionsScene(size: size)
             OptionScene.scaleMode = scaleMode

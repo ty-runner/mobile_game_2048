@@ -14,22 +14,36 @@ class GlobalSettings {
     static let shared = GlobalSettings()
     
     var backButton: SKSpriteNode!
-    
     var startbutton: CGRect = .zero
-    
     var storebutton: CGRect = .zero
-    
     var optionsbutton: CGRect = .zero
     
+    var isSoundMuted: Bool = false {
+        didSet {
+            //Update sound volume when mute value changes
+            transitionAudioPlayer?.volume = isSoundMuted ? 0 : 0.2
+        }
+    }
+    
+    var isMusicMuted: Bool = false {
+        didSet {
+            //Update background music volume when the mute value changes
+            backgroundMusicPlayer?.volume = isMusicMuted ? 0 : 0.2
+        }
+    }
+    
     var transitionAudioPlayer: AVAudioPlayer?
+    var backgroundMusicPlayer: AVAudioPlayer?
     
     private init() {} // This prevents others from creating instances of this class
     
+    
+    //Sets up transition/button press audio change music file
     func playTransitionAudio() {
-            if let transitionAudioURL = Bundle.main.url(forResource: "TransitionBubbles", withExtension: "mp3") {
+            if let transitionAudioURL = Bundle.main.url(forResource: "glasshit", withExtension: "mp3") {
                 do {
                     transitionAudioPlayer = try AVAudioPlayer(contentsOf: transitionAudioURL)
-                    transitionAudioPlayer?.volume = 0.3
+                    transitionAudioPlayer?.volume = isSoundMuted ? 0 : 0.2
                     transitionAudioPlayer?.prepareToPlay()  // Prepare audio before playing
                     transitionAudioPlayer?.play()
                 } catch {
@@ -40,6 +54,20 @@ class GlobalSettings {
     
     func stopTransitionAudio() {
         transitionAudioPlayer?.stop()
+    }
+    
+    //Sets up background Music Just Change musicfile
+    func setupAudio() {
+        if let backgroundMusicURL = Bundle.main.url(forResource: "backgroundMusic", withExtension: "mp3") {
+            do {
+                backgroundMusicPlayer = try AVAudioPlayer(contentsOf: backgroundMusicURL)
+                backgroundMusicPlayer?.numberOfLoops = -1
+                backgroundMusicPlayer?.volume = isMusicMuted ? 0 : 0.2
+                backgroundMusicPlayer?.play()
+            } catch {
+                print("Error loading background music: \(error)")
+            }
+        }
     }
     
     func setupBackButton(for screenSize: CGSize) {

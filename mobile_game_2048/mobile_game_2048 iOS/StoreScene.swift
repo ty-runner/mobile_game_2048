@@ -16,7 +16,7 @@ class StoreScene: SKScene {
     
     let storeBackground = SKSpriteNode(imageNamed: "StoreScene")
     var scrollView: UIScrollView!
-    var backButtonImageView: UIImageView? // Keep a reference to the back button
+    //var backButtonImageView: UIImageView? // Keep a reference to the back button
     
     override func didMove(to view: SKView) {
         
