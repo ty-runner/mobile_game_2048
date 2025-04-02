@@ -17,9 +17,6 @@ Pods/
 *.xcworkspace
 *.xcsharedsettings
 *.xcplayground
-**/Library/Caches/*
-**/Library/Logs/*
-**/Library/Developer/Xcode/DerivedData/*
 # macOS system files
 .DS_Store
 .AppleDouble
