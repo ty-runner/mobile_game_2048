@@ -1,0 +1,58 @@
+# Xcode
+build/
+DerivedData/
+*.ipa
+*.xcframework
+# CocoaPods
+Pods/
+*.xcconfig
+# Caches and Temporary Files
+*.DS_Store
+*.log
+*.tmp
+*.swp
+# Other
+*.xcuserstate
+*.pbxuser
+*.xcworkspace
+*.xcsharedsettings
+*.xcplayground
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode user-specific files
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+*.xcworkspace/
+*.xcuserdata/
+*.xcodeproj/project.pbxproj
+*.xcodeproj/xcuserdata/
+*.xcschemes
+# Build and derived data
+DerivedData/
+build/
+*.ipa
+
+# Swift Package Manager
+.swiftpm/
+Package.resolved
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+
+# Archives
+*.xcarchive
+

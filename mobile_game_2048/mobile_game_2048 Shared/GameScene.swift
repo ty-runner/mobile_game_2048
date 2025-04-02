@@ -5,6 +5,8 @@
 //
 
 import SpriteKit
+import Foundation
+import AVFoundation
 
 class GameScene: SKScene {
     
@@ -18,6 +20,16 @@ class GameScene: SKScene {
     var touchStart: CGPoint?
     
     override func didMove(to view: SKView) {
+        
+        GlobalSettings.shared.setupAudio() 
+        
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: .mixWithOthers)
+            try? AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("Failed to set up AVAudioSession: \(error)")
+        }
         background.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
         background.size = CGSize(width: size.width, height: size.height)
         background.zPosition = -1
@@ -38,6 +50,17 @@ class GameScene: SKScene {
         drawBoard(board1, at: CGPoint(x: boardOffsetX - boardSpacing, y: boardY), boardName: "board1")
         drawBoard(board2, at: CGPoint(x: size.width - boardOffsetX + boardSpacing, y: boardY), boardName: "board2")
     }
+}
+
+/*
+
+#if os(iOS) || os(tvOS)
+// Touch-based event handling
+extension GameScene {
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+
+=======
     
     func drawBoard(_ board: [[Int]], at position: CGPoint, boardName: String) {
         childNode(withName: boardName)?.removeFromParent()
@@ -71,6 +94,7 @@ class GameScene: SKScene {
                     boardNode.addChild(tileLabel)
                 }
             }
+>>>>>>> main
         }
     }
     
@@ -203,3 +227,28 @@ class GameScene: SKScene {
         drawBoard(board2, at: CGPoint(x: size.width * 0.75, y: size.height * 0.5), boardName: "board2")
     }
 }
+<<<<<<< HEAD
+#endif
+
+#if os(OSX)
+// Mouse-based event handling
+extension GameScene {
+
+    override func mouseDown(with event: NSEvent) {
+        
+    }
+    
+    override func mouseDragged(with event: NSEvent) {
+        
+    }
+    
+    override func mouseUp(with event: NSEvent) {
+        
+    }
+
+}
+#endif
+*/
+
+=======
+>>>>>>> main
