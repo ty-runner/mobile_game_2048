@@ -20,3 +20,42 @@ Pods/
 **/Library/Caches/*
 **/Library/Logs/*
 **/Library/Developer/Xcode/DerivedData/*
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode user-specific files
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+*.xcworkspace/
+*.xcuserdata/
+*.xcodeproj/project.pbxproj
+*.xcodeproj/xcuserdata/
+
+# Build and derived data
+DerivedData/
+build/
+*.ipa
+
+# Swift Package Manager
+.swiftpm/
+Package.resolved
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+
+# Archives
+*.xcarchive
+
