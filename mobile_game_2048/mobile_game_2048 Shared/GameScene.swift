@@ -50,17 +50,7 @@ class GameScene: SKScene {
         drawBoard(board1, at: CGPoint(x: boardOffsetX - boardSpacing, y: boardY), boardName: "board1")
         drawBoard(board2, at: CGPoint(x: size.width - boardOffsetX + boardSpacing, y: boardY), boardName: "board2")
     }
-}
 
-/*
-
-#if os(iOS) || os(tvOS)
-// Touch-based event handling
-extension GameScene {
-
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-
-=======
     
     func drawBoard(_ board: [[Int]], at position: CGPoint, boardName: String) {
         childNode(withName: boardName)?.removeFromParent()
@@ -94,7 +84,6 @@ extension GameScene {
                     boardNode.addChild(tileLabel)
                 }
             }
->>>>>>> main
         }
     }
     
@@ -227,25 +216,3 @@ extension GameScene {
         drawBoard(board2, at: CGPoint(x: size.width * 0.75, y: size.height * 0.5), boardName: "board2")
     }
 }
-<<<<<<< HEAD
-#endif
-
-#if os(OSX)
-// Mouse-based event handling
-extension GameScene {
-
-    override func mouseDown(with event: NSEvent) {
-        
-    }
-    
-    override func mouseDragged(with event: NSEvent) {
-        
-    }
-    
-    override func mouseUp(with event: NSEvent) {
-        
-    }
-
-}
-#endif
-*/
