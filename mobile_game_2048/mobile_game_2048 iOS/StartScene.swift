@@ -20,16 +20,20 @@ class StartScene: SKScene{
     
     override func didMove(to view: SKView){
         
-        homescreen.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
-        
+        homescreen.position = CGPoint(x: size.width/2, y: size.height/2) //was self.size.width, self.size.height
         homescreen.size = CGSize(width: size.width, height: size.height)
         homescreen.zPosition = 0
         addChild(homescreen)
-        
+        //let coin_iconX = (size.width)
+        //coin_icon.position = CGPoint(x:
         
         GlobalSettings.shared.setupBackButton(for: size) //Initializing backbutton on screen load to be used globally
-        
-        
+        GlobalSettings.shared.setupCoinRegion(for: size) //Initializing coin region on screen load to be used globally
+        let coinRegion = CoinRegion(coins: GameData.shared.coins)
+        coinRegion.position = CGPoint(x: 100, y: size.height - 50)
+        addChild(coinRegion)
+
+        //addChild(GlobalSettings.shared.coinIcon)
         
         let startButtonX = (size.width - buttonWidth) / 2 // Centered horizontally
         let startButtonY = size.height * 0.50 // Position based on percentage of screen height
@@ -63,6 +67,7 @@ class StartScene: SKScene{
         
         let startbutton = mobile_game_2048.GlobalSettings.shared.startbutton
         if startbutton.contains(location) {
+            print("Start button Clicked - Transitioning to GameScene")
             GlobalSettings.shared.playTransitionAudio() // Play transition sound
             let gameScene = GameScene(size: size)
             gameScene.viewController = self.viewController
@@ -84,7 +89,6 @@ class StartScene: SKScene{
             GlobalSettings.shared.playTransitionAudio() // Play transition sound
             let storeScene = StoreScene(size: size)
             storeScene.scaleMode = scaleMode
-            
             let transition = SKTransition.fade(withDuration: 1.0)
             view?.presentScene(storeScene, transition: transition)
             
@@ -93,7 +97,6 @@ class StartScene: SKScene{
                 GlobalSettings.shared.stopTransitionAudio() // Stop transition audio after 1 second
             }
         }
-        
         let optionsbutton = mobile_game_2048.GlobalSettings.shared.optionsbutton
         if optionsbutton.contains(location) {
             print("Option CLICKED")

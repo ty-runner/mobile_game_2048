@@ -30,7 +30,7 @@ Pods/
 *.xcuserdata/
 *.xcodeproj/project.pbxproj
 *.xcodeproj/xcuserdata/
-
+*.xcschemes
 # Build and derived data
 DerivedData/
 build/

@@ -14,6 +14,8 @@ class GlobalSettings {
     static let shared = GlobalSettings()
     
     var backButton: SKSpriteNode!
+    
+    var coinIcon: SKSpriteNode!
     var startbutton: CGRect = .zero
     var storebutton: CGRect = .zero
     var optionsbutton: CGRect = .zero
@@ -70,16 +72,29 @@ class GlobalSettings {
         }
     }
     
-    func setupBackButton(for screenSize: CGSize) {
-        let buttonWidth: CGFloat = 45
+    func setupBackButton(for screenSize: CGSize) { //red X back button, CURRENTLY PRESENT ON OPEN - SHOULDNT BE
+        let buttonWidth: CGFloat = 60
         let buttonHeight: CGFloat = 60
-        let buttonX = screenSize.width - buttonWidth - 20 // 20 points from the right edge
-        let buttonY = screenSize.height - buttonHeight - 20 // 20 points from the top edge
+        let buttonX = screenSize.width - buttonWidth + 10// 20 points from the right edge
+        let buttonY = screenSize.height - buttonHeight - 10 // 20 points from the top edge
         
         // Create the back button as an SKSpriteNode using your image "BackButton.png"
         backButton = SKSpriteNode(imageNamed: "BackButton.png")
         backButton.size = CGSize(width: buttonWidth, height: buttonHeight)
         backButton.position = CGPoint(x: buttonX, y: buttonY)
         backButton.zPosition = 1 // Ensure it's on top of other content
+    }
+    func setupCoinRegion(for screenSize: CGSize) { //red X back button, CURRENTLY PRESENT ON OPEN - SHOULDNT BE
+        let buttonWidth: CGFloat = 200
+        let buttonHeight: CGFloat = 50
+        let iconX = screenSize.width - buttonWidth // 20 points from the right edge
+        let iconY = screenSize.height - buttonHeight - 10 // 20 points from the top edge
+        
+        // Create the back button as an SKSpriteNode using your image "BackButton.png"
+        coinIcon = SKSpriteNode(imageNamed: "CoinIcon")
+        coinIcon.size = CGSize(width: buttonWidth, height: buttonHeight)
+        coinIcon.position = CGPoint(x: iconX, y: iconY)
+         // Ensure it's on top of other content
+
     }
 }

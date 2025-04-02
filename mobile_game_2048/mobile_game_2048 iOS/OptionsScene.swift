@@ -25,6 +25,10 @@ class OptionsScene: SKScene {
         OptionScene.size = CGSize(width: size.width, height: size.height)
         OptionScene.zPosition = 0
         addChild(OptionScene)
+        let coinRegion = CoinRegion(coins: GameData.shared.coins)
+        coinRegion.position = CGPoint(x: 100, y: size.height - 50)
+        addChild(coinRegion)
+        
         
         /*
         let debugRect = SKShapeNode(rect: BackButton)
@@ -65,6 +69,8 @@ class OptionsScene: SKScene {
         let backButton = mobile_game_2048.GlobalSettings.shared.backButton
         
         //BackButton Pressed transition scene and play sound
+        //let plusButton = plusButton
+        //let minusButton = minusButton
         if backButton!.contains(location){
             GlobalSettings.shared.transitionAudioPlayer?.volume = isSoundMuted ? 0 : 0.5
             GlobalSettings.shared.playTransitionAudio() // Play transition sound
@@ -93,4 +99,5 @@ class OptionsScene: SKScene {
             print("Music muted: \(isMusicMuted)")
         }
     }
+    
 }
