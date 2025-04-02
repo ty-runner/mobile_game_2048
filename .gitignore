@@ -1,0 +1,22 @@
+# Xcode
+build/
+DerivedData/
+*.ipa
+*.xcframework
+# CocoaPods
+Pods/
+*.xcconfig
+# Caches and Temporary Files
+*.DS_Store
+*.log
+*.tmp
+*.swp
+# Other
+*.xcuserstate
+*.pbxuser
+*.xcworkspace
+*.xcsharedsettings
+*.xcplayground
+**/Library/Caches/*
+**/Library/Logs/*
+**/Library/Developer/Xcode/DerivedData/*
