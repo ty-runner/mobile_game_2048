@@ -17,6 +17,7 @@ class GameScene: SKScene {
     let tileSize: CGFloat = 30  // Tile size
     let spacing: CGFloat = 10   // Space between tiles
     var touchStart: CGPoint?
+    var scoreRegion: ScoreRegion!
     var gameOverShown = false
 
     // Called when the scene is first presented. Sets up audio, boards, tiles, and UI elements.
@@ -30,6 +31,10 @@ class GameScene: SKScene {
         } catch {
             print("Failed to set up AVAudioSession: \(error)")
         }
+        scoreRegion = ScoreRegion(score: GameData.shared.score)
+        scoreRegion.position = CGPoint(x: 100, y: size.height - 50)
+        scoreRegion.name = "scoreRegion"
+        addChild(scoreRegion)
         // Positioning
         background.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
         background.size = CGSize(width: size.width, height: size.height)
@@ -54,6 +59,8 @@ class GameScene: SKScene {
     override func update(_ currentTime: TimeInterval) {
         if !gameOverShown && isGameOver(board1) && isGameOver(board2) {
             gameOverShown = true
+            GameData.shared.coins += Int(Double(GameData.shared.score) * 0.01)
+            GameData.shared.score = 0 //reset score
             showGameOver()
         }
     }
@@ -243,6 +250,7 @@ class GameScene: SKScene {
                     }
                     if newCol > 0 && board[row][newCol - 1] == board[row][newCol] && !merged[newCol - 1] {
                         board[row][newCol - 1] *= 2
+                        scoreRegion.updateScore(to: GameData.shared.score + board[row][newCol-1])
                         board[row][newCol] = 0
                         merged[newCol - 1] = true
                     }
@@ -265,6 +273,7 @@ class GameScene: SKScene {
                     }
                     if newCol < 3 && board[row][newCol + 1] == board[row][newCol] && !merged[newCol + 1] {
                         board[row][newCol + 1] *= 2
+                        scoreRegion.updateScore(to: GameData.shared.score + board[row][newCol+1])
                         board[row][newCol] = 0
                         merged[newCol + 1] = true
                     }
@@ -287,6 +296,7 @@ class GameScene: SKScene {
                     }
                     if newRow > 0 && board[newRow - 1][col] == board[newRow][col] && !merged[newRow - 1] {
                         board[newRow - 1][col] *= 2
+                        scoreRegion.updateScore(to: GameData.shared.score + board[newRow-1][col])
                         board[newRow][col] = 0
                         merged[newRow - 1] = true
                     }
@@ -309,6 +319,7 @@ class GameScene: SKScene {
                     }
                     if newRow < 3 && board[newRow + 1][col] == board[newRow][col] && !merged[newRow + 1] {
                         board[newRow + 1][col] *= 2
+                        scoreRegion.updateScore(to: GameData.shared.score + board[newRow+1][col])
                         board[newRow][col] = 0
                         merged[newRow + 1] = true
                     }
