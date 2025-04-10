@@ -18,7 +18,7 @@ Pods/
 *.xcsharedsettings
 *.xcplayground
 # macOS system files
-.DS_Store
+*.DS_Store
 .AppleDouble
 .LSOverride
 
