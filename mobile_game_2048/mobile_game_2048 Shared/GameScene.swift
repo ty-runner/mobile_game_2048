@@ -34,9 +34,7 @@ class GameScene: SKScene {
         //reset score
         GameData.shared.score = 0;
         scoreRegion = ScoreRegion(score: GameData.shared.score)
-        scoreRegion.position = CGPoint(x: 100, y: size.height - 50)
         scoreRegion.position = CGPoint(x: size.width / 2.2, y: size.height - 100)
-
         scoreRegion.name = "scoreRegion"
         addChild(scoreRegion)
         // Positioning
