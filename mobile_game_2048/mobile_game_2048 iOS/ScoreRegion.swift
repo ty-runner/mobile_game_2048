@@ -37,7 +37,7 @@ class ScoreRegion: SKNode {
             scoreLabel.fontName = "Helvetica-Bold"
         }
         scoreLabel.text = "\(score)"
-        scoreLabel.fontSize = 20
+        scoreLabel.fontSize = 40
         scoreLabel.fontColor = .white
         scoreLabel.position = CGPoint(x: 20, y: -5)
         scoreLabel.zPosition = 2
