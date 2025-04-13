@@ -19,7 +19,7 @@ class StartScene: SKScene{
     let buttonHeight: CGFloat = 75
     
     override func didMove(to view: SKView){
-        
+        GlobalSettings.shared.stopBackgroundAudio()
         homescreen.position = CGPoint(x: size.width/2, y: size.height/2) //was self.size.width, self.size.height
         homescreen.size = CGSize(width: size.width, height: size.height)
         homescreen.zPosition = 0

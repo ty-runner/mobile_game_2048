@@ -57,7 +57,9 @@ class GlobalSettings {
     func stopTransitionAudio() {
         transitionAudioPlayer?.stop()
     }
-    
+    func stopBackgroundAudio() {
+        backgroundMusicPlayer?.stop()
+    }
     //Sets up background Music Just Change musicfile
     func setupAudio() {
         if let backgroundMusicURL = Bundle.main.url(forResource: "backgroundMusic", withExtension: "mp3") {

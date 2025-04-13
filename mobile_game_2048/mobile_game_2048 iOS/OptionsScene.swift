@@ -52,11 +52,13 @@ class OptionsScene: SKScene {
         addChild(MuteSound)
         
         //Image, Size, and Position of MuteMusicButton
-        MuteMusic = SKSpriteNode(imageNamed: "MuteMusic.png")
+        MuteMusic = SKSpriteNode(imageNamed: "musicNote.png")
         MuteMusic.size = CGSize(width: buttonWidth, height: buttonHeight)
         MuteMusic.position = CGPoint(x: buttonX * 0.70, y: buttonY)
         MuteMusic.zPosition = 1
         addChild(MuteMusic)
+        isSoundMuted = GlobalSettings.shared.isSoundMuted
+        isMusicMuted = GlobalSettings.shared.isMusicMuted
     }
     
     
