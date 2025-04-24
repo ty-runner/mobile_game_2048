@@ -10,14 +10,21 @@ import SpriteKit
 import GameplayKit
 import GoogleMobileAds
 
-class GameViewController: UIViewController, BannerViewDelegate {
+class GameViewController: UIViewController, BannerViewDelegate, FullScreenContentDelegate {
     
     var bannerView: BannerView!
+    
+    var interstitial: InterstitialAd?
+    
+    private var pendingStartScene: SKScene?
+    
+    private var rewardedAd: RewardedAd?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         let startscene = StartScene(size: view.bounds.size)
+        startscene.viewController = self
         
         // Present the scene
         let skView = self.view as! SKView
@@ -43,6 +50,12 @@ class GameViewController: UIViewController, BannerViewDelegate {
         bannerView.rootViewController = self
         bannerView.load(Request())
         bannerView.delegate = self
+        
+        Task {
+            await self.loadInterstitial()
+        }
+        
+        
     }
     
     func bannerViewDidReceiveAd(_ bannerView: BannerView) {
@@ -72,6 +85,93 @@ func addBannerViewToView(_ bannerView: BannerView) {
                           constant: 0)
       ])
   }
+    
+    //Rewarded Ad Test Ad unit and load function
+    func loadRewardedAd() async {
+        do {
+          rewardedAd = try await RewardedAd.load(
+            with: "ca-app-pub-3940256099942544/1712485313", request: Request())
+            rewardedAd?.fullScreenContentDelegate = self
+        } catch {
+          print("Rewarded ad failed to load with error: \(error.localizedDescription)")
+        }
+      }
+    
+    // Function to present the rewarded ad
+    func showRewardedAd(completion: @escaping () -> Void) {
+        if let ad = rewardedAd {
+            ad.present(from: self) {
+                let reward = ad.adReward
+                print("User earned reward: \(reward.amount) \(reward.type)")
+                
+                completion()
+                // Handle reward logic here, like giving user in-game currency
+            }
+        } else {
+            print("Rewarded ad wasn't ready")
+        }
+    }
+
+    //Main function to load Interstitial ads
+    func loadInterstitial() async {
+      do {
+        interstitial = try await InterstitialAd.load(
+          with: "ca-app-pub-3940256099942544/4411468910", request: Request()) //replace this with actual Ad tag
+          interstitial?.fullScreenContentDelegate = self
+          print("Interstitial laoded and assigned")
+      } catch {
+        print("Failed to load interstitial ad with error: \(error.localizedDescription)")
+      }
+    }
+    
+    func adDidRecordImpression(_ ad: FullScreenPresentingAd) {
+      print("\(#function) called")
+    }
+
+    func adDidRecordClick(_ ad: FullScreenPresentingAd) {
+      print("\(#function) called")
+    }
+
+    func ad(_ ad: FullScreenPresentingAd, didFailToPresentFullScreenContentWithError error: Error) {
+      print("\(#function) called with error: \(error.localizedDescription)")
+      // Clear the interstitial ad.
+      interstitial = nil
+    }
+
+    func adWillPresentFullScreenContent(_ ad: FullScreenPresentingAd) {
+      print("\(#function) called")
+    }
+
+    func adWillDismissFullScreenContent(_ ad: FullScreenPresentingAd) {
+      print("\(#function) called")
+    }
+    
+    func showInterstitialAdIfAvailable() {
+        if let interstitial = interstitial {
+            print("Showing interstitial now")
+            DispatchQueue.main.async {
+                interstitial.present(from: self)
+            }
+        } else {
+            print("Interstitial ad wasn't ready")
+        }
+    }
+    
+    func adDidDismissFullScreenContent(_ ad: FullScreenPresentingAd) {
+      print("\(#function) called")
+      // Clear the interstitial ad.
+      interstitial = nil
+        rewardedAd = nil
+        
+        //Reloads Ad after being dismissed
+        Task {
+            await self.loadRewardedAd()
+            await self.loadInterstitial()
+        }
+    }
+    
+    
+
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         if UIDevice.current.userInterfaceIdiom == .phone {

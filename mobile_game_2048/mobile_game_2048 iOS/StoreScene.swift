@@ -44,6 +44,7 @@ class StoreScene: SKScene {
         if backButton!.contains(location) {
             GlobalSettings.shared.playTransitionAudio() // Play transition sound
             let startScene = StartScene(size: size)
+            startScene.viewController = self.viewController //NECESSARY TO RESET VIEW CONTROLLER ANYTIME TRANSITIONING FROM SCENES FOR ADS
             let transition = SKTransition.fade(withDuration: 1.0)
             view?.presentScene(startScene, transition: transition)
 

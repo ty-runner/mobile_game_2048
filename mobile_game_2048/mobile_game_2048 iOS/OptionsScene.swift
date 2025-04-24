@@ -11,6 +11,8 @@ import AVFoundation
 
 class OptionsScene: SKScene {
     
+    weak var viewController: GameViewController?  // Add this property
+    
     let OptionScene = SKSpriteNode(imageNamed: "OptionsScene")
     //Variables
     var MuteSound: SKSpriteNode!
@@ -77,6 +79,7 @@ class OptionsScene: SKScene {
             GlobalSettings.shared.transitionAudioPlayer?.volume = isSoundMuted ? 0 : 0.5
             GlobalSettings.shared.playTransitionAudio() // Play transition sound
             let startScene = StartScene(size: size)
+            startScene.viewController = self.viewController //NECESSARY TO RESET VIEW CONTROLLER ANYTIME TRANSITIONING FROM SCENES FOR ADS
             let transition = SKTransition.fade(withDuration: 1.0)
             view?.presentScene(startScene, transition: transition)
             
