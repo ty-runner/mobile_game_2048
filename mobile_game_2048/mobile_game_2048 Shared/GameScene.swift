@@ -15,7 +15,7 @@ class GameScene: SKScene {
     let background = SKSpriteNode(imageNamed: "background")
     var board1: [[Int]] = Array(repeating: Array(repeating: 0, count: 4), count: 4)
     var board2: [[Int]] = Array(repeating: Array(repeating: 0, count: 4), count: 4)
-    let tileSize: CGFloat = 30  // Tile size
+    let tileSize: CGFloat = 60  // Tile size
     let spacing: CGFloat = 10   // Space between tiles
     var touchStart: CGPoint?
     var scoreRegion: ScoreRegion!
@@ -193,14 +193,17 @@ class GameScene: SKScene {
     // Initializes and draws both game boards.
     func setupBoards() {
         backgroundColor = .black
-        let boardSpacing: CGFloat = size.width * 0.10
-        let boardOffsetX: CGFloat = size.width * 0.3
+        let boardSpacing: CGFloat = size.height * 0.25 //was 0.10
+        let boardX: CGFloat = size.width * 0.5
         let boardY: CGFloat = size.height * 0.5
         
-        drawBoard(board1, at: CGPoint(x: boardOffsetX - boardSpacing, y: boardY), boardName: "board1")
-        drawBoard(board2, at: CGPoint(x: size.width - boardOffsetX + boardSpacing, y: boardY), boardName: "board2")
+        drawBoard(board1, at: CGPoint(x: 0, y: boardY), boardName: "board1")
+        drawBoard(board2, at: CGPoint(x: boardX, y: boardY + boardSpacing), boardName: "board2")
     }
-    
+    func countDigits(of number: Int) -> Int {
+        let absNumber = abs(number)  // Handle negative numbers
+        return max(1, Int(log10(Double(absNumber == 0 ? 1 : absNumber))) + 1)
+    }
     // Renders the given board and its tiles at a given position.
     func drawBoard(_ board: [[Int]], at position: CGPoint, boardName: String) {
         childNode(withName: boardName)?.removeFromParent()
@@ -225,7 +228,10 @@ class GameScene: SKScene {
                 
                 if board[row][col] != 0 {
                     let tileLabel = SKLabelNode(text: "\(board[row][col])")
-                    tileLabel.fontSize = 32
+                    tileLabel.fontName = "AvenirNext-Bold"
+                    let digits = countDigits(of: board[row][col])
+                    let fontSize = max(20, 36 - 4 * (digits - 1))  // Clamp to 24 min
+                    tileLabel.fontSize = CGFloat(fontSize)
                     tileLabel.fontColor = .white
                     tileLabel.position = tileBackground.position
                     tileLabel.verticalAlignmentMode = .center
@@ -251,7 +257,7 @@ class GameScene: SKScene {
             cols.enumerated().compactMap { col, value in value == 0 ? (row, col) : nil }
         }
         if let position = emptyTiles.randomElement() {
-            board[position.0][position.1] = [2, 4].randomElement()!
+            board[position.0][position.1] = 1024//[2, 4].randomElement()!
         }
     }
     
@@ -421,7 +427,7 @@ class GameScene: SKScene {
 
         // Redraws both boards after a move to reflect the current state.
         func redrawBoards() {
-            drawBoard(board1, at: CGPoint(x: size.width * 0.25, y: size.height * 0.5), boardName: "board1")
-            drawBoard(board2, at: CGPoint(x: size.width * 0.75, y: size.height * 0.5), boardName: "board2")
+            drawBoard(board1, at: CGPoint(x: size.width * 0.5, y: size.height * 0.35), boardName: "board1")
+            drawBoard(board2, at: CGPoint(x: size.width * 0.5, y: size.height * 0.7), boardName: "board2")
         }
     }
