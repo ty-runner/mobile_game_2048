@@ -16,9 +16,17 @@ class StartScene: SKScene{
     let homescreen = SKSpriteNode(imageNamed: "StartScene")
     let videoNode = SKVideoNode(fileNamed: "StartSceneVideo.mp4")
     
-    let buttonWidth: CGFloat = 250
-    let buttonHeight: CGFloat = 75
-    
+
+    func addDebugBoundingBox(rect: CGRect, color: SKColor, to parent: SKNode) {
+        let path = CGPath(rect: rect, transform: nil)
+        let box = SKShapeNode(path: path)
+        box.strokeColor = color
+        box.lineWidth = 2.0
+        box.zPosition = 9999 // Make sure it's on top of other nodes
+        box.fillColor = .clear
+        parent.addChild(box)
+    }
+
     override func didMove(to view: SKView){
         GlobalSettings.shared.stopBackgroundAudio()
         homescreen.position = CGPoint(x: size.width/2, y: size.height/2) //was self.size.width, self.size.height
@@ -68,21 +76,37 @@ class StartScene: SKScene{
         let coinRegion = CoinRegion(coins: GameData.shared.coins)
         coinRegion.position = CGPoint(x: 100, y: size.height - 50)
         addChild(coinRegion)
+        let buttonWidth: CGFloat = size.width / 6
+        let buttonHeight: CGFloat = size.height / 15
 
-        //addChild(GlobalSettings.shared.coinIcon)
-        
-        let startButtonX = (size.width - buttonWidth) / 2 // Centered horizontally
-        let startButtonY = size.height * 0.50 // Position based on percentage of screen height
-        GlobalSettings.shared.startbutton = CGRect(x: startButtonX, y: startButtonY, width: buttonWidth, height: buttonHeight)
-        
-        let storeButtonX = (size.width - buttonWidth) / 2 // Centered horizontally
-        let storeButtonY = size.height * 0.30 // Position based on percentage of screen height
+        // Define two start buttons using CGRect, placed left and right
+        let startButton1X = size.width * 0.2
+        let startButton1Y = size.height * 0.30
+        GlobalSettings.shared.startbutton1 = CGRect(x: startButton1X, y: startButton1Y, width: buttonWidth, height: buttonHeight)
+
+        let startButton2X = size.width * 0.15
+        let startButton2Y = size.height * 0.51
+        GlobalSettings.shared.startbutton2 = CGRect(x: startButton2X, y: startButton2Y, width: buttonWidth * 4, height: buttonHeight)
+
+        // Store button in the middle
+        let storeButtonX = (size.width - buttonWidth) / 2.05
+        let storeButtonY = size.height * 0.30
         GlobalSettings.shared.storebutton = CGRect(x: storeButtonX, y: storeButtonY, width: buttonWidth, height: buttonHeight)
-        
-        let optionsButtonX = (size.width - buttonWidth) / 2 // Centered horizontally
-        let optionsButtonY = size.height * 0.15 // Position based on percentage of screen height
+
+        // Options button more to the right
+        let optionsButtonX = (size.width - buttonWidth) / 1.35
+        let optionsButtonY = size.height * 0.30
         GlobalSettings.shared.optionsbutton = CGRect(x: optionsButtonX, y: optionsButtonY, width: buttonWidth, height: buttonHeight)
-        
+
+
+        /*// Add visible debug boxes for layout verification
+        addDebugBoundingBox(rect: GlobalSettings.shared.startbutton1, color: .red, to: self)
+        addDebugBoundingBox(rect: GlobalSettings.shared.startbutton2, color: .orange, to: self)
+
+        addDebugBoundingBox(rect: GlobalSettings.shared.storebutton, color: .green, to: self)
+        addDebugBoundingBox(rect: GlobalSettings.shared.optionsbutton, color: .blue, to: self)*/
+
+
         //addChild(GlobalSettings.shared.backButton)
         
         /*
@@ -101,8 +125,9 @@ class StartScene: SKScene{
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
         
-        let startbutton = mobile_game_2048.GlobalSettings.shared.startbutton
-        if startbutton.contains(location) {
+        let startbutton1 = mobile_game_2048.GlobalSettings.shared.startbutton1
+        let startbutton2 = mobile_game_2048.GlobalSettings.shared.startbutton2
+        if startbutton1.contains(location) || startbutton2.contains(location){
             print("Start button Clicked - Transitioning to GameScene")
             
             print("Attempting to show interstitial. ViewController is: \(String(describing: viewController) )")

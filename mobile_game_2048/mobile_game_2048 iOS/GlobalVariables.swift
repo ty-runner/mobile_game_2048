@@ -16,7 +16,8 @@ class GlobalSettings {
     var backButton: SKSpriteNode!
     
     var coinIcon: SKSpriteNode!
-    var startbutton: CGRect = .zero
+    var startbutton1: CGRect = .zero
+    var startbutton2: CGRect = .zero
     var storebutton: CGRect = .zero
     var optionsbutton: CGRect = .zero
     

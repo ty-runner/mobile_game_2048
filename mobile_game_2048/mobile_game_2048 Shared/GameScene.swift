@@ -171,6 +171,10 @@ class GameScene: SKScene {
         }
     }
     
+    var tileNodes: [[SKLabelNode?]] = Array(
+        repeating: Array(repeating: nil, count: 4),
+        count: 4
+    )
     
     // Checks if a board has no valid moves left (game over condition).
     func isGameOver(_ board: [[Int]]) -> Bool {
@@ -257,7 +261,7 @@ class GameScene: SKScene {
             cols.enumerated().compactMap { col, value in value == 0 ? (row, col) : nil }
         }
         if let position = emptyTiles.randomElement() {
-            board[position.0][position.1] = 1024//[2, 4].randomElement()!
+            board[position.0][position.1] = [2, 4].randomElement()!
         }
     }
     
