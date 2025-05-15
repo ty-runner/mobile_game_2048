@@ -118,7 +118,7 @@ func addBannerViewToView(_ bannerView: BannerView) {
         interstitial = try await InterstitialAd.load(
           with: "ca-app-pub-3940256099942544/4411468910", request: Request()) //replace this with actual Ad tag
           interstitial?.fullScreenContentDelegate = self
-          print("Interstitial laoded and assigned")
+          print("Interstitial loaded and assigned")
       } catch {
         print("Failed to load interstitial ad with error: \(error.localizedDescription)")
       }
