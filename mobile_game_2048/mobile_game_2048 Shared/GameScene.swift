@@ -57,7 +57,7 @@ class GameScene: SKScene {
         spawnInitialTiles()
         redrawBoards()
         
-        showGameOver() //GET RID OF THIS FUNCTION ONLY FOR TESTING AD AND GAME OVER SCENE
+        //showGameOver() //GET RID OF THIS FUNCTION ONLY FOR TESTING AD AND GAME OVER SCENE
         
         let backButton = SKLabelNode(text: "⟵ Back")
         backButton.fontName = "AvenirNext-Bold"

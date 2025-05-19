@@ -47,10 +47,47 @@ class ScoreRegion: SKNode {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    // Function to update coin count
     func updateScore(to newCount: Int) {
-        let clampedCount = max(0, newCount) // Prevent negative coin count
+        let clampedCount = max(0, newCount) // Prevent negative score
+        
+        // Calculate the difference for the +X animation
+        let diff = clampedCount - (Int(scoreLabel.text ?? "0") ?? 0)
+        
+        if diff > 0 {
+            showScoreIncrement(diff)
+        }
+        
         scoreLabel.text = "\(clampedCount)"
         GameData.shared.score = clampedCount
     }
+    private var activeIncrementsCount = 0
+
+    private func showScoreIncrement(_ increment: Int) {
+        let incrementLabel = SKLabelNode(fontNamed: scoreLabel.fontName)
+        incrementLabel.text = "+\(increment)"
+        incrementLabel.fontSize = 30
+        incrementLabel.fontColor = .yellow
+
+        // Position horizontally same as before, but offset vertically by count * 20 points
+        let verticalOffset = CGFloat(activeIncrementsCount * 20)
+        incrementLabel.position = CGPoint(x: scoreLabel.position.x + 50, y: scoreLabel.position.y + verticalOffset)
+        incrementLabel.zPosition = 3
+        addChild(incrementLabel)
+        
+        activeIncrementsCount += 1
+
+        // Animate: move up by 30 points, fade out over 1 second
+        let moveUp = SKAction.moveBy(x: 0, y: 30, duration: 1.0)
+        let fadeOut = SKAction.fadeOut(withDuration: 1.0)
+        let group = SKAction.group([moveUp, fadeOut])
+        let remove = SKAction.run { [weak self] in
+            incrementLabel.removeFromParent()
+            self?.activeIncrementsCount -= 1
+        }
+        let sequence = SKAction.sequence([group, remove])
+        
+        incrementLabel.run(sequence)
+    }
+
+
 }
