@@ -3,7 +3,7 @@ import SpriteKit
 class StoreAddCoins: SKNode {
     private var background: SKShapeNode!
     private var valLabel: SKLabelNode!
-    private var count: Int
+    var count: Int
     
     init(count: Int) {
         self.count = count
@@ -23,10 +23,10 @@ class StoreAddCoins: SKNode {
 
         // Coin Count Label
         valLabel = SKLabelNode(fontNamed: "Arial-BoldMT")
-        valLabel.text = "+ \(count)"
+        valLabel.text = "\(count)"
         valLabel.fontSize = 20
         valLabel.fontColor = .white
-        valLabel.position = CGPoint(x: 60, y: 10)
+        valLabel.position = CGPoint(x: 0, y: 55)
         valLabel.zPosition = 2
         addChild(valLabel)
     }

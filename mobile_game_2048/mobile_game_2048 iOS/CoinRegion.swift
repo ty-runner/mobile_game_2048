@@ -19,7 +19,7 @@ class CoinRegion: SKNode {
         // Background with Rounded Corners
         let rect = CGRect(x: -75, y: -25, width: 150, height: 50)
         background = SKShapeNode(rect: rect, cornerRadius: 20) // Rounded corners
-        background.fillColor = .brown
+        background.fillColor = .darkGray
         background.strokeColor = .clear
         background.zPosition = 1
         addChild(background)
