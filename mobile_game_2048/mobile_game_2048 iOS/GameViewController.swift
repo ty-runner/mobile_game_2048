@@ -9,6 +9,7 @@ import UIKit
 import SpriteKit
 import GameplayKit
 import GoogleMobileAds
+import GameKit
 
 class GameViewController: UIViewController, BannerViewDelegate, FullScreenContentDelegate {
     
@@ -22,6 +23,8 @@ class GameViewController: UIViewController, BannerViewDelegate, FullScreenConten
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        //Authenticate Game Center player on Launch
+        authenticateGameCenterPlayer()
         
         let startscene = StartScene(size: view.bounds.size)
         startscene.viewController = self
@@ -170,8 +173,24 @@ func addBannerViewToView(_ bannerView: BannerView) {
         }
     }
     
-    
-
+    // Authenticates the local player using Game Center
+    func authenticateGameCenterPlayer() {
+        let localPlayer = GKLocalPlayer.local
+ 
+        localPlayer.authenticateHandler = { viewController, error in
+            if let viewController = viewController {
+                // Show Game Center login if not signed in
+                self.present(viewController, animated: true)
+            } else if localPlayer.isAuthenticated {
+                print("✅ Game Center: Authenticated as \(localPlayer.alias)")
+            } else {
+                print("❌ Game Center: Not authenticated")
+                if let error = error {
+                    print("Error: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         if UIDevice.current.userInterfaceIdiom == .phone {

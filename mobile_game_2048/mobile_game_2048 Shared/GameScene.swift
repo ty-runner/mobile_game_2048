@@ -57,6 +57,7 @@ class GameScene: SKScene {
         spawnInitialTiles()
         redrawBoards()
         
+        
         //showGameOver() //GET RID OF THIS FUNCTION ONLY FOR TESTING AD AND GAME OVER SCENE
         
         let backButton = SKLabelNode(text: "⟵ Back")
@@ -204,6 +205,11 @@ class GameScene: SKScene {
         drawBoard(board1, at: CGPoint(x: 0, y: boardY), boardName: "board1")
         drawBoard(board2, at: CGPoint(x: boardX, y: boardY + boardSpacing), boardName: "board2")
     }
+    
+    func reviveBoards() {
+        
+    }
+    
     func countDigits(of number: Int) -> Int {
         let absNumber = abs(number)  // Handle negative numbers
         return max(1, Int(log10(Double(absNumber == 0 ? 1 : absNumber))) + 1)
