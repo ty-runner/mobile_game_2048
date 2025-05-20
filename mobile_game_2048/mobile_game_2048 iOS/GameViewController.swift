@@ -10,6 +10,7 @@ import SpriteKit
 import GameplayKit
 import GameKit
 import GoogleMobileAds
+import GameKit
 
 class GameViewController: UIViewController, BannerViewDelegate, FullScreenContentDelegate {
     
@@ -172,21 +173,21 @@ func addBannerViewToView(_ bannerView: BannerView) {
             await self.loadInterstitial()
         }
     }
-    //Authenticates the local player using Game Center
-        func authenticateGameCenterPlayer() {
-            let localPlayer = GKLocalPlayer.local
-
-            localPlayer.authenticateHandler = { viewController, error in
-                if let viewController = viewController {
-                    // Show Game Center login if not signed in
-                    self.present(viewController, animated: true)
-                } else if localPlayer.isAuthenticated {
-                    print("✅ Game Center: Authenticated as \(localPlayer.alias)")
-                } else {
-                    print("❌ Game Center: Not authenticated")
-                    if let error = error {
-                        print("Error: \(error.localizedDescription)")
-                    }
+    
+    // Authenticates the local player using Game Center
+    func authenticateGameCenterPlayer() {
+        let localPlayer = GKLocalPlayer.local
+ 
+        localPlayer.authenticateHandler = { viewController, error in
+            if let viewController = viewController {
+                // Show Game Center login if not signed in
+                self.present(viewController, animated: true)
+            } else if localPlayer.isAuthenticated {
+                print("✅ Game Center: Authenticated as \(localPlayer.alias)")
+            } else {
+                print("❌ Game Center: Not authenticated")
+                if let error = error {
+                    print("Error: \(error.localizedDescription)")
                 }
             }
         }

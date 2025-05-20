@@ -22,7 +22,8 @@ class StoreScene: SKScene {
         
         // Add store background
         storeBackground.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
-        storeBackground.size = CGSize(width: size.width, height: size.height)
+        storeBackground.size = CGSize(width: size.width
+                                      , height: size.height)
         storeBackground.zPosition = 0
         addChild(storeBackground)
         let coinRegion = CoinRegion(coins: GameData.shared.coins)
