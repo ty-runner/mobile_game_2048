@@ -175,6 +175,45 @@ class GameScene: SKScene {
         repeating: Array(repeating: nil, count: 4),
         count: 4
     )
+    func reviveBoard1() {
+        // 1. Get highest value from board2
+        let maxValue = board1.flatMap { $0 }.max() ?? 0
+
+        // 2. Clear the entire board2
+        board1 = Array(repeating: Array(repeating: 0, count: 4), count: 4)
+
+        // 3. Place the max value into a random tile
+        let randomRow = Int.random(in: 0..<4)
+        let randomCol = Int.random(in: 0..<4)
+        board1[randomRow][randomCol] = maxValue
+        
+        //4.redraw the boards
+        redrawBoards()
+
+        // 5. Allow game to continue
+        gameOverShown = false
+    }
+
+    
+    func reviveBoard2() {
+        // 1. Get highest value from board2
+        let maxValue = board2.flatMap { $0 }.max() ?? 0
+
+        // 2. Clear the entire board2
+        board2 = Array(repeating: Array(repeating: 0, count: 4), count: 4)
+
+        // 3. Place the max value into a random tile
+        let randomRow = Int.random(in: 0..<4)
+        let randomCol = Int.random(in: 0..<4)
+        board2[randomRow][randomCol] = maxValue
+        
+        //4.redraw the boards
+        redrawBoards()
+
+        // 5. Allow game to continue
+        gameOverShown = false
+    }
+
     
     // Checks if a board has no valid moves left (game over condition).
     func isGameOver(_ board: [[Int]]) -> Bool {
@@ -300,9 +339,12 @@ class GameScene: SKScene {
                     self.viewController?.showRewardedAd {
                         print(" Ad watched")
                         self.RestartGame?.removeFromParent()
+                        self.reviveBoard1()
+                        self.reviveBoard2()
                     }
                 }
             }
+            
         }
 
         
