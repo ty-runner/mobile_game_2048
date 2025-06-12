@@ -74,7 +74,6 @@ class GameScene: SKScene {
         if !gameOverShown && isGameOver(board1) && isGameOver(board2) {
             gameOverShown = true
             GameData.shared.coins += Int(Double(GameData.shared.score) * 0.01)
-            GameData.shared.score = 0 //reset score
             showGameOver()
         }
     }
