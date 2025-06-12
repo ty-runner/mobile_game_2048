@@ -22,19 +22,20 @@ class StoreScene: SKScene {
     var scrollView: UIScrollView!
     //var backButtonImageView: UIImageView? // Keep a reference to the back button
     // Helper function to add StoreAddCoins nodes
-    func addCoinItem(image: String, coins: Int, position: CGPoint, name: String) {
+    func addCoinItem(image: String, coins: Int, position: CGPoint, name: String, scale: CGFloat = 0.1) {
         let item = StoreAddCoins(count: coins)
         item.position = position
         item.name = name
         
         let icon = SKSpriteNode(imageNamed: image)
         icon.zPosition = 1
-        icon.setScale(0.1) // scale if needed
-        icon.position = .zero // center inside the parent
+        icon.setScale(scale) // use passed-in scale
+        icon.position = .zero
         item.addChild(icon)
         
         addChild(item)
     }
+
     override func didMove(to view: SKView) {
         // Add store background
         storeBackground.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
@@ -49,10 +50,11 @@ class StoreScene: SKScene {
         addChild(coinRegion)
         
         // Add coin bundles
-        addCoinItem(image: "CashStack",  coins: 100, position: CGPoint(x: size.width / 4, y: size.height / 2.5), name: "CashStack")
-        addCoinItem(image: "CashPile",   coins: 500, position: CGPoint(x: size.width / 2, y: size.height / 2.5), name: "CashPile")
-        addCoinItem(image: "CashChest",  coins: 1000, position: CGPoint(x: 3 * size.width / 4, y: size.height / 2.5), name: "CashChest")
-        addCoinItem(image: "CashVault",  coins: 5000, position: CGPoint(x: size.width / 2, y: size.height / 4), name: "CashVault")
+        addCoinItem(image: "CashStack", coins: 100, position: CGPoint(x: size.width / 4, y: size.height / 2.5), name: "Cash", scale: 0.15)
+        addCoinItem(image: "CashPile", coins: 500, position: CGPoint(x: size.width / 2, y: size.height / 2.5), name: "CashPile", scale: 0.15)
+        addCoinItem(image: "CashChest", coins: 1000, position: CGPoint(x: 3 * size.width / 4, y: size.height / 2.5), name: "CashChest", scale: 0.08)
+        addCoinItem(image: "CashVault", coins: 5000, position: CGPoint(x: size.width / 2, y: size.height / 4), name: "CashVault", scale: 0.16)
+
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
