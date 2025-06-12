@@ -341,6 +341,9 @@ class GameScene: SKScene {
                         self.RestartGame?.removeFromParent()
                         self.reviveBoard1()
                         self.reviveBoard2()
+                        self.countdownTimer?.invalidate()
+                        self.countdownTime = 10
+                        
                     }
                 }
             }
