@@ -37,6 +37,7 @@
 			membershipExceptions = (
 				Actions.sks,
 				Assets.xcassets,
+				background.mp4,
 				GameScene.sks,
 				GameScene.swift,
 			);
@@ -47,6 +48,7 @@
 			membershipExceptions = (
 				Actions.sks,
 				Assets.xcassets,
+				background.mp4,
 				GameScene.sks,
 				GameScene.swift,
 			);

@@ -12,7 +12,7 @@ class GameScene: SKScene {
     
     weak var viewController: GameViewController?
     
-    let background = SKSpriteNode(imageNamed: "background")
+    //let background = SKSpriteNode(imageNamed: "background")
     var board1: [[Int]] = Array(repeating: Array(repeating: 0, count: 4), count: 4)
     var board2: [[Int]] = Array(repeating: Array(repeating: 0, count: 4), count: 4)
     let tileSize: CGFloat = 60  // Tile size
@@ -29,11 +29,12 @@ class GameScene: SKScene {
     
     var countdownTimer: Timer?
     var countdownTime = 10
+    var videoNode: SKVideoNode?
     
     // Called when the scene is first presented. Sets up audio, boards, tiles, and UI elements.
     override func didMove(to view: SKView) {
         GlobalSettings.shared.setupAudio()
-        
+        playBackgroundVideo()
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: .mixWithOthers)
             try? AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
@@ -48,10 +49,10 @@ class GameScene: SKScene {
         scoreRegion.name = "scoreRegion"
         addChild(scoreRegion)
         // Positioning
-        background.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
+        /*background.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
         background.size = CGSize(width: size.width, height: size.height)
         background.zPosition = -1
-        addChild(background)
+        addChild(background)*/
         
         setupBoards()
         spawnInitialTiles()
@@ -68,7 +69,36 @@ class GameScene: SKScene {
         backButton.zPosition = 10
         addChild(backButton)
     }
-    
+    func playBackgroundVideo() {
+        guard let videoURL = Bundle.main.url(forResource: "background", withExtension: "mp4") else {
+            print("Video file not found.")
+            return
+        }
+
+        let player = AVPlayer(url: videoURL)
+        player.isMuted = true // optional: mute if needed
+
+        videoNode = SKVideoNode(avPlayer: player)
+
+        if let videoNode = videoNode {
+            videoNode.position = CGPoint(x: size.width / 2, y: size.height / 2)
+            videoNode.size = self.size
+            videoNode.zPosition = -1 // ensures it's in the background
+            addChild(videoNode)
+            videoNode.play()
+        }
+
+        // Add looping behavior here
+        NotificationCenter.default.addObserver(
+            forName: .AVPlayerItemDidPlayToEndTime,
+            object: player.currentItem,
+            queue: .main
+        ) { _ in
+            player.seek(to: .zero)
+            player.play()
+        }
+    }
+
     // Called every frame. Checks if both boards are in a game over state.
     override func update(_ currentTime: TimeInterval) {
         if !gameOverShown && isGameOver(board1) && isGameOver(board2) {
