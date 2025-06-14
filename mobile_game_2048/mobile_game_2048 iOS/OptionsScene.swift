@@ -19,14 +19,11 @@ class OptionsScene: SKScene {
     var MuteMusic: SKSpriteNode!
     var isSoundMuted: Bool = false
     var isMusicMuted: Bool = false
-    
+    var videoNode: SKVideoNode?
     override func didMove(to view: SKView) {
         
         //Sets Initial Scene
-        OptionScene.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
-        OptionScene.size = CGSize(width: size.width, height: size.height)
-        OptionScene.zPosition = 0
-        addChild(OptionScene)
+        videoNode = VideoHelper.playBackgroundVideo(on: self)
         let coinRegion = CoinRegion(coins: GameData.shared.coins)
         coinRegion.position = CGPoint(x: 100, y: size.height - 50)
         addChild(coinRegion)

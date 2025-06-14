@@ -32,6 +32,20 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		1D0C7F462DFDD5D900BEE08E /* Exceptions for "mobile_game_2048 iOS" folder in "mobile_game_2048 tvOS" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				VideoHelper.swift,
+			);
+			target = 1D34417D2D825B820027D2F0 /* mobile_game_2048 tvOS */;
+		};
+		1D0C7F472DFDD5D900BEE08E /* Exceptions for "mobile_game_2048 iOS" folder in "mobile_game_2048 macOS" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				VideoHelper.swift,
+			);
+			target = 1D34418D2D825B820027D2F0 /* mobile_game_2048 macOS */;
+		};
 		1D3441A82D825B820027D2F0 /* Exceptions for "mobile_game_2048 Shared" folder in "mobile_game_2048 tvOS" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -68,6 +82,10 @@
 		};
 		1D34416F2D825B820027D2F0 /* mobile_game_2048 iOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1D0C7F462DFDD5D900BEE08E /* Exceptions for "mobile_game_2048 iOS" folder in "mobile_game_2048 tvOS" target */,
+				1D0C7F472DFDD5D900BEE08E /* Exceptions for "mobile_game_2048 iOS" folder in "mobile_game_2048 macOS" target */,
+			);
 			path = "mobile_game_2048 iOS";
 			sourceTree = "<group>";
 		};
