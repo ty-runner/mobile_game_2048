@@ -13,5 +13,7 @@ class GameData {
     var score: Int = 0 //Score count at start of game
     var coins: Int = 100 // Coin count shared across scenes
     
+    var unlockedFeatures: Set<Int> = []
+    
     private init() {} // Prevents accidental instantiation
 }

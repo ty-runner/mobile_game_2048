@@ -1,93 +1,305 @@
-//
-//  StoreScene.swift
-//  test
-//
-//  Created by Cameron McClymont on 3/5/25.
-//
-
 import Foundation
 import SpriteKit
 import UIKit
 import AVFoundation
 
+// Represents the store scene in the game, where players can purchase coins and unlock features.
 class StoreScene: SKScene {
-    
-    weak var viewController: GameViewController?  // Add this property
-    var count = 100
-    let storeBackground = SKSpriteNode(imageNamed: "StoreScene")
-    let CashPile = SKSpriteNode(imageNamed: "CashPile")
-    let CashStack = SKSpriteNode(imageNamed: "CashStack")
-    let CashChest = SKSpriteNode(imageNamed: "CashChest")
-    let CashVault = SKSpriteNode(imageNamed: "CashVault")
-    var scrollView: UIScrollView!
-    var videoNode: SKVideoNode?
-    //var backButtonImageView: UIImageView? // Keep a reference to the back button
-    // Helper function to add StoreAddCoins nodes
-    func addCoinItem(image: String, coins: Int, position: CGPoint, name: String, scale: CGFloat = 0.1) {
-        let item = StoreAddCoins(count: coins)
-        item.position = position
-        item.name = name
-        
-        let icon = SKSpriteNode(imageNamed: image)
-        icon.zPosition = 1
-        icon.setScale(scale) // use passed-in scale
-        icon.position = .zero
-        item.addChild(icon)
-        
-        addChild(item)
-    }
 
+    // A weak reference to the GameViewController instance.
+    weak var viewController: GameViewController?
+    
+    // The UIScrollView used to display the store content.
+    var scrollView: UIScrollView!
+
+    // The background image for the store scene.
+    private let storeBackground = SKSpriteNode(imageNamed: "StoreScene")
+
+    // Arrays containing the values, costs, and image names for the different coin packs.
+    private let goldValues = [5000, 10000, 20000, 50000]
+    private let goldCosts = ["$0.99", "$4.99", "$9.99", "$49.99"]
+    private let goldImageNames = ["CashStack", "CashPile", "CashChest", "CashVault"]
+
+    // Arrays containing the labels, prices, and other data for the unlockable features.
+    private let unlockLabels = ["DEFAULT", "UNLOCK", "UNLOCK", "UNLOCK"]
+    private let unlockPrices = [0, 5000, 10000, 20000]
+
+    // A reference to the back button.
+    private var backButton: UIButton?
+
+    // Called when the scene is presented.
     override func didMove(to view: SKView) {
-        // Add store background
-        videoNode = VideoHelper.playBackgroundVideo(on: self)
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: .mixWithOthers)
-            try? AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
-            try AVAudioSession.sharedInstance().setActive(true)
-        } catch {
-            print("Failed to set up AVAudioSession: \(error)")
-        }
-        
-        // Coin display
+        // Set up the background image.
+        storeBackground.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        storeBackground.size = CGSize(width: size.width, height: size.height)
+        storeBackground.zPosition = 0
+        addChild(storeBackground)
+
+        // Create a CoinRegion node to display the player's coin count.
         let coinRegion = CoinRegion(coins: GameData.shared.coins)
         coinRegion.position = CGPoint(x: size.width / 2, y: size.height - 100)
         coinRegion.name = "CoinRegion"
+        coinRegion.zPosition = 1000
         addChild(coinRegion)
+
+        // Set up the scroll view and its content.
+        setupScrollView(in: view)
         
-        // Add coin bundles
-        addCoinItem(image: "CashStack", coins: 100, position: CGPoint(x: size.width / 4, y: size.height / 2.5), name: "Cash", scale: 0.15)
-        addCoinItem(image: "CashPile", coins: 500, position: CGPoint(x: size.width / 2, y: size.height / 2.5), name: "CashPile", scale: 0.15)
-        addCoinItem(image: "CashChest", coins: 1000, position: CGPoint(x: 3 * size.width / 4, y: size.height / 2.5), name: "CashChest", scale: 0.08)
-        addCoinItem(image: "CashVault", coins: 5000, position: CGPoint(x: size.width / 2, y: size.height / 4), name: "CashVault", scale: 0.16)
+        // Add a back button to return to the start scene.
+        addBackButton(to: view)
 
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else { return }
-        let location = touch.location(in: self)
-        let touchedNode = atPoint(location)
-        let backButton = GlobalSettings.shared.backButton
-        if backButton!.contains(location) {
-            GlobalSettings.shared.playTransitionAudio() // Play transition sound
-            let startScene = StartScene(size: size)
-            startScene.viewController = self.viewController //NECESSARY TO RESET VIEW CONTROLLER ANYTIME TRANSITIONING FROM SCENES FOR ADS
-            let transition = SKTransition.fade(withDuration: 1.0)
-            view?.presentScene(startScene, transition: transition)
-
-            // Ensure the audio stops when the transition is done
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                GlobalSettings.shared.stopTransitionAudio() // Stop transition audio after 1 second
+        // Ensure the banner view is visible and on top.
+        if let banner = viewController?.bannerView {
+            if banner.superview == nil {
+                view.addSubview(banner)
             }
+            view.bringSubviewToFront(banner)
         }
-        if let storeAdd = touchedNode.parent as? StoreAddCoins {
-            let coinsToAdd = storeAdd.count
-            GameData.shared.coins += coinsToAdd
+    }
 
+    // Called when the scene is about to be removed.
+    override func willMove(from view: SKView) {
+        // Remove the scroll view and back button from the view.
+        scrollView?.removeFromSuperview()
+        backButton?.removeFromSuperview()
+    }
+
+    // Sets up the scroll view and its content.
+    private func setupScrollView(in view: SKView) {
+        // Calculate the height of the coin region.
+        let coinRegionHeight: CGFloat = size.height * 0.13
+        
+        // Create a frame for the scroll view.
+        let scrollFrame = CGRect(x: 0, y: coinRegionHeight, width: view.frame.size.width, height: view.frame.size.height - coinRegionHeight)
+        
+        // Initialize the scroll view.
+        scrollView = UIScrollView(frame: scrollFrame)
+        scrollView.showsVerticalScrollIndicator = true
+        scrollView.delaysContentTouches = false
+        scrollView.backgroundColor = .clear
+
+        // Create a content view for the scroll view.
+        let contentHeight: CGFloat = scrollFrame.height * 3
+        let storeContentView = UIView(frame: CGRect(x: 0, y: 0, width: scrollFrame.width, height: contentHeight))
+        scrollView.addSubview(storeContentView)
+        view.addSubview(scrollView)
+
+        // Initialize a variable to track the current y offset.
+        var currentYOffset: CGFloat = 20
+
+        // Add unlock containers to the content view.
+        for (i, label) in unlockLabels.enumerated() {
+            currentYOffset = addUnlockContainer(to: storeContentView, at: i, labelText: label, yOffset: currentYOffset)
+        }
+
+        // Add coin pack containers to the content view.
+        let spacing: CGFloat = 40
+        let containerHeight: CGFloat = size.height * 0.3
+        let containerWidth: CGFloat = size.width * 0.35
+
+        for i in 0..<goldImageNames.count {
+            if i % 2 == 0 && i != 0 {
+                currentYOffset += containerHeight + spacing
+            }
+
+            let xPos: CGFloat = (i % 2 == 0) ? scrollFrame.width * 0.1 : scrollFrame.width * 0.55
+            let containerFrame = CGRect(x: xPos, y: currentYOffset, width: containerWidth, height: containerHeight)
+
+            let containerView = UIView(frame: containerFrame)
+            containerView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+            containerView.layer.cornerRadius = 20
+            containerView.layer.borderWidth = 2
+            containerView.layer.borderColor = UIColor.white.cgColor
+            containerView.clipsToBounds = true
+            storeContentView.addSubview(containerView)
+
+            // Add a gold image view to the container.
+            let goldImageView = UIImageView(image: UIImage(named: goldImageNames[i]))
+            goldImageView.frame = CGRect(
+                x: (containerView.bounds.width - size.width * 0.2) / 2,
+                y: 20,
+                width: size.width * 0.2,
+                height: size.height * 0.2
+            )
+            goldImageView.contentMode = .scaleAspectFit
+            containerView.addSubview(goldImageView)
+
+            // Add labels to display the coin value and cost.
+            let goldValueLabel = UILabel(frame: CGRect(x: 0, y: goldImageView.frame.maxY + 10, width: containerView.bounds.width, height: 24))
+            goldValueLabel.text = "\(goldValues[i].formattedWithSeparator())"
+            goldValueLabel.textAlignment = .center
+            goldValueLabel.textColor = .white
+            goldValueLabel.font = UIFont(name: "AvenirNext-Bold", size: 20)
+            containerView.addSubview(goldValueLabel)
+
+            let costLabel = UILabel(frame: CGRect(x: 0, y: goldValueLabel.frame.maxY + 5, width: containerView.bounds.width, height: 20))
+            costLabel.text = goldCosts[i]
+            costLabel.textAlignment = .center
+            costLabel.textColor = .white
+            costLabel.font = UIFont(name: "AvenirNext-Bold", size: 16)
+            containerView.addSubview(costLabel)
+
+            // Add a buy button to the container.
+            addBuyButton(to: containerView, frame: containerView.bounds, tag: i + 1)
+        }
+
+        // Set the content size of the scroll view.
+        let maxY = storeContentView.subviews.map { $0.frame.maxY }.max() ?? scrollFrame.height
+        scrollView.contentSize = CGSize(width: scrollFrame.width, height: maxY + 60)
+    }
+
+    // Adds a buy button to the specified view.
+    private func addBuyButton(to view: UIView, frame: CGRect, tag: Int) {
+        let buyButton = UIButton(frame: frame)
+        buyButton.backgroundColor = .clear
+        buyButton.tag = tag
+        buyButton.addTarget(self, action: #selector(buyButtonTapped(_:)), for: .touchUpInside)
+        view.addSubview(buyButton)
+    }
+
+    // Adds an unlock container to the specified parent view.
+    private func addUnlockContainer(to parentView: UIView, at index: Int, labelText: String, yOffset: CGFloat) -> CGFloat {
+        // Calculate the size and position of the container.
+        let containerHeight: CGFloat = size.height * 0.5
+        let containerWidth: CGFloat = size.width * 0.85
+        let containerX = (parentView.frame.width - containerWidth) / 2
+
+        let containerView = UIView(frame: CGRect(x: containerX, y: yOffset, width: containerWidth, height: containerHeight))
+        containerView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        containerView.layer.cornerRadius = 20
+        containerView.layer.borderWidth = 2
+        containerView.layer.borderColor = UIColor.white.cgColor
+        containerView.clipsToBounds = true
+        parentView.addSubview(containerView)
+
+        // Get the price of the unlockable feature.
+        let price = unlockPrices[index]
+
+        // Add a label to display the price.
+        let priceLabel = UILabel(frame: CGRect(x: 0, y: 20, width: containerView.bounds.width, height: 30))
+        priceLabel.text = "Cost: \(price.formattedWithSeparator()) coins"
+        priceLabel.textAlignment = .center
+        priceLabel.textColor = .white
+        priceLabel.font = UIFont(name: "AvenirNext-Bold", size: 18)
+        containerView.addSubview(priceLabel)
+
+        // Calculate the position and size of the unlock button.
+        let buttonHeight: CGFloat = 50
+        let buttonWidth: CGFloat = 200
+        let buttonX = (containerView.frame.width - buttonWidth) / 2
+        let buttonY = containerView.frame.height - buttonHeight - 20
+
+        // Create the unlock button.
+        let unlockButton = UIButton(frame: CGRect(x: buttonX, y: buttonY, width: buttonWidth, height: buttonHeight))
+        unlockButton.setTitle(labelText, for: .normal)
+        unlockButton.backgroundColor = (index == 0) ? .gray : .red
+        unlockButton.layer.cornerRadius = 10
+        unlockButton.clipsToBounds = true
+        unlockButton.tag = 1000 + index
+
+        // Add a target to the unlock button if it's not the default feature.
+        if index != 0 {
+            unlockButton.addTarget(self, action: #selector(unlockButtonTapped(_:)), for: .touchUpInside)
+        } else {
+            unlockButton.isUserInteractionEnabled = false
+        }
+
+        containerView.addSubview(unlockButton)
+
+        // Return the maximum y value of the container view plus some padding.
+        return containerView.frame.maxY + 30
+    }
+
+    // Called when an unlock button is tapped.
+    @objc private func unlockButtonTapped(_ sender: UIButton) {
+        // Get the index of the unlockable feature.
+        let index = sender.tag - 1000
+        let cost = unlockPrices[index]
+
+        // Check if the player has enough coins to unlock the feature.
+        if GameData.shared.coins >= cost {
+            // Deduct the cost from the player's coins.
+            GameData.shared.coins -= cost
+
+            // Update the coin count display.
             if let coinRegion = self.childNode(withName: "CoinRegion") as? CoinRegion {
                 coinRegion.updateCoins(to: GameData.shared.coins)
             }
+
+            // Mark the feature as unlocked.
+            GameData.shared.unlockedFeatures.insert(index)
+
+            // Update the unlock button's appearance.
+            sender.setTitle("UNLOCKED", for: .normal)
+            sender.backgroundColor = .gray
+            sender.isEnabled = false
+            print("Unlocked feature at index \(index) for \(cost) coins.")
+        } else {
+            // Display an alert if the player doesn't have enough coins.
+            let alert = UIAlertController(title: "Not Enough Coins", message: "You need \(cost - GameData.shared.coins) more coins to unlock this.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            viewController?.present(alert, animated: true)
         }
     }
 
+    // Called when a buy button is tapped.
+    @objc private func buyButtonTapped(_ sender: UIButton) {
+        // Get the tag of the buy button.
+        let tag = sender.tag
+        guard tag >= 1 && tag <= goldValues.count else { return }
 
+        // Display a confirmation alert.
+        let alert = UIAlertController(title: "Purchase", message: "Are you sure you want to buy \(goldValues[tag - 1].formattedWithSeparator()) coins?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Confirm", style: .default, handler: { _ in
+            // Add the purchased coins to the player's total.
+            GameData.shared.coins += self.goldValues[tag - 1]
+            if let coinRegion = self.childNode(withName: "CoinRegion") as? CoinRegion {
+                coinRegion.updateCoins(to: GameData.shared.coins)
+            }
+        }))
+
+        viewController?.present(alert, animated: true)
+    }
+
+    // Adds a back button to the specified view.
+    private func addBackButton(to view: SKView) {
+        let buttonFrame = CGRect(x: 20, y: 40, width: 100, height: 40)
+        let backBtn = UIButton(frame: buttonFrame)
+        backBtn.setTitle("Back", for: .normal)
+        backBtn.backgroundColor = .black
+        backBtn.layer.cornerRadius = 10
+        backBtn.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
+        view.addSubview(backBtn)
+        backButton = backBtn
+    }
+
+    // Called when the back button is tapped.
+    @objc private func backTapped() {
+        // Remove the scroll view and back button from the view.
+        scrollView?.removeFromSuperview()
+        backButton?.removeFromSuperview()
+
+        // Transition back to the start scene.
+        if let view = self.view {
+            let transition = SKTransition.fade(withDuration: 0.5)
+            let startScene = StartScene(size: view.bounds.size)
+            startScene.viewController = self.viewController
+            view.presentScene(startScene, transition: transition)
+        }
+    }
 }
+
+// MARK: - Formatting helper
+extension Int {
+    // Formats the integer with a decimal separator.
+    func formattedWithSeparator() -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter.string(from: NSNumber(value: self)) ?? "\(self)"
+    }
+}
+
+
+
+

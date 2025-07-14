@@ -34,12 +34,4 @@ class StoreAddCoins: SKNode {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    // Handle taps on this node
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        GameData.shared.coins += count  // Update coin count
-        if let coinRegion = parent?.childNode(withName: "CoinRegion") as? CoinRegion {
-            coinRegion.updateCoins(to: GameData.shared.coins)  // Update UI
-        }
-    }
 }
