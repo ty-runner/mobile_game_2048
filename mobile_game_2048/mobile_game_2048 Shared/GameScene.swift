@@ -11,8 +11,10 @@ import GoogleMobileAds
 class GameScene: SKScene {
     
     weak var viewController: GameViewController?
-    
+
     let background = SKSpriteNode(imageNamed: "SBackground")
+
+    //let background = SKSpriteNode(imageNamed: "background")
     var board1: [[Int]] = Array(repeating: Array(repeating: 0, count: 4), count: 4)
     var board2: [[Int]] = Array(repeating: Array(repeating: 0, count: 4), count: 4)
     let tileSize: CGFloat = 60  // Tile size
@@ -29,11 +31,11 @@ class GameScene: SKScene {
     
     var countdownTimer: Timer?
     var countdownTime = 10
-    
+    var videoNode: SKVideoNode?
     // Called when the scene is first presented. Sets up audio, boards, tiles, and UI elements.
     override func didMove(to view: SKView) {
         GlobalSettings.shared.setupAudio()
-        
+        videoNode = VideoHelper.playBackgroundVideo(on: self)
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: .mixWithOthers)
             try? AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
@@ -49,10 +51,10 @@ class GameScene: SKScene {
         scoreRegion.name = "scoreRegion"
         addChild(scoreRegion)
         // Positioning
-        background.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
+        /*background.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
         background.size = CGSize(width: size.width, height: size.height)
         background.zPosition = -1
-        addChild(background)
+        addChild(background)*/
         
         setupBoards()
         spawnInitialTiles()
@@ -69,13 +71,12 @@ class GameScene: SKScene {
         backButton.zPosition = 10
         addChild(backButton)
     }
-    
+
     // Called every frame. Checks if both boards are in a game over state.
     override func update(_ currentTime: TimeInterval) {
         if !gameOverShown && isGameOver(board1) && isGameOver(board2) {
             gameOverShown = true
             GameData.shared.coins += Int(Double(GameData.shared.score) * 0.01)
-            GameData.shared.score = 0 //reset score
             showGameOver()
         }
     }
@@ -344,6 +345,7 @@ class GameScene: SKScene {
                         self.reviveBoard2()
                         self.countdownTimer?.invalidate()
                         self.countdownTime = 10
+
                     }
                 }
             }
