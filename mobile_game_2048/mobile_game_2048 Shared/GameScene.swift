@@ -11,7 +11,9 @@ import GoogleMobileAds
 class GameScene: SKScene {
     
     weak var viewController: GameViewController?
-    
+
+    let background = SKSpriteNode(imageNamed: "SBackground")
+
     //let background = SKSpriteNode(imageNamed: "background")
     var board1: [[Int]] = Array(repeating: Array(repeating: 0, count: 4), count: 4)
     var board2: [[Int]] = Array(repeating: Array(repeating: 0, count: 4), count: 4)
@@ -42,6 +44,7 @@ class GameScene: SKScene {
             print("Failed to set up AVAudioSession: \(error)")
         }
         //reset score
+        
         GameData.shared.score = 0;
         scoreRegion = ScoreRegion(score: GameData.shared.score)
         scoreRegion.position = CGPoint(x: size.width / 2.2, y: size.height - 100)
@@ -342,7 +345,7 @@ class GameScene: SKScene {
                         self.reviveBoard2()
                         self.countdownTimer?.invalidate()
                         self.countdownTime = 10
-                        
+
                     }
                 }
             }

@@ -20,7 +20,13 @@ class GlobalSettings {
     var startbutton2: CGRect = .zero
     var storebutton: CGRect = .zero
     var optionsbutton: CGRect = .zero
+    var isLightTheme: Bool = false {
+        didSet {
+            UserDefaults.standard.set(isLightTheme, forKey: "isLightTheme")
+        }
+    }
     
+
     var isSoundMuted: Bool = false {
         didSet {
             //Update sound volume when mute value changes
