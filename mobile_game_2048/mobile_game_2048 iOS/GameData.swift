@@ -1,4 +1,3 @@
-//
 //  GameData.swift
 //  mobile_game_2048
 //
