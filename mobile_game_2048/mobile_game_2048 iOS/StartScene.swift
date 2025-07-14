@@ -9,12 +9,13 @@ import Foundation
 import SpriteKit
 import AVFoundation
 var transitionAudioPlayer: AVAudioPlayer?
+
 class StartScene: SKScene{
     
     weak var viewController: GameViewController?  // Add this property
     
-    let homescreen = SKSpriteNode(imageNamed: "StartScene")
-    let videoNode = SKVideoNode(fileNamed: "StartSceneVideo.mp4")
+    let homescreen = SKSpriteNode(imageNamed: "StoreScene")
+    //let videoNode = SKVideoNode(fileNamed: "StartSceneVideo.mp4")
     
 
     func addDebugBoundingBox(rect: CGRect, color: SKColor, to parent: SKNode) {
@@ -22,7 +23,7 @@ class StartScene: SKScene{
         let box = SKShapeNode(path: path)
         box.strokeColor = color
         box.lineWidth = 2.0
-        box.zPosition = 9999 // Make sure it's on top of other nodes
+        box.zPosition = 1 // Make sure it's on top of other nodes
         box.fillColor = .clear
         parent.addChild(box)
     }
@@ -84,8 +85,8 @@ class StartScene: SKScene{
         let startButton1Y = size.height * 0.30
         GlobalSettings.shared.startbutton1 = CGRect(x: startButton1X, y: startButton1Y, width: buttonWidth, height: buttonHeight)
 
-        let startButton2X = size.width * 0.15
-        let startButton2Y = size.height * 0.51
+        let startButton2X = size.width * 0.155
+        let startButton2Y = size.height * 0.6
         GlobalSettings.shared.startbutton2 = CGRect(x: startButton2X, y: startButton2Y, width: buttonWidth * 4, height: buttonHeight)
 
         // Store button in the middle
@@ -97,10 +98,60 @@ class StartScene: SKScene{
         let optionsButtonX = (size.width - buttonWidth) / 1.35
         let optionsButtonY = size.height * 0.30
         GlobalSettings.shared.optionsbutton = CGRect(x: optionsButtonX, y: optionsButtonY, width: buttonWidth, height: buttonHeight)
+        // Add visible buttons
+        // BLOCK CASCADE Title Box
+        let titleRect = GlobalSettings.shared.startbutton2
 
+        let optionsColor = SKColor(red: 0.5, green: 0.0, blue: 0.5, alpha: 0.9) //purple
+        let startColor = SKColor(red: 0.0, green: 0.1, blue: 0.9, alpha: 0.9) //blue
+        let storeColor = SKColor(red: 255/255, green: 215/255, blue: 0/255, alpha: 0.8) //yellow
+        let titleColor = SKColor(red: 0.9, green: 0.3, blue: 0.1, alpha: 1.0) //orange
+        
+        let titleBackground = SKShapeNode(rect: titleRect, cornerRadius: 12)
+        titleBackground.fillColor = titleColor
+        titleBackground.strokeColor = .white
+        titleBackground.lineWidth = 2
+        titleBackground.zPosition = 5
+        addChild(titleBackground)
 
-        /*// Add visible debug boxes for layout verification
-        addDebugBoundingBox(rect: GlobalSettings.shared.startbutton1, color: .red, to: self)
+        let titleLabel = SKLabelNode(text: "BLOCK CASCADE")
+        titleLabel.fontName = "DINCondensed-Bold"
+        titleLabel.fontSize = 40
+        titleLabel.fontColor = .white
+        titleLabel.position = CGPoint(x: titleRect.midX, y: titleRect.midY - 15)
+        titleLabel.zPosition = 6
+        addChild(titleLabel)
+        
+
+        // START (Blue background)
+        let startButtonNode = createButton(
+            rect: GlobalSettings.shared.startbutton1,
+            backgroundColor: startColor,
+            labelText: "START",
+            labelColor: .white
+        )
+        addChild(startButtonNode)
+
+        // STORE (Yellow background)
+        let storeButtonNode = createButton(
+            rect: GlobalSettings.shared.storebutton,
+            backgroundColor: storeColor,
+            labelText: "STORE",
+            labelColor: .white
+        )
+        addChild(storeButtonNode)
+
+        // OPTIONS (Purple background)
+        let optionsButtonNode = createButton(
+            rect: GlobalSettings.shared.optionsbutton,
+            backgroundColor: optionsColor,
+            labelText: "OPTIONS",
+            labelColor: .white
+        )
+        addChild(optionsButtonNode)
+
+        // Add visible debug boxes for layout verification
+        /*addDebugBoundingBox(rect: GlobalSettings.shared.startbutton1, color: .red, to: self)
         addDebugBoundingBox(rect: GlobalSettings.shared.startbutton2, color: .orange, to: self)
 
         addDebugBoundingBox(rect: GlobalSettings.shared.storebutton, color: .green, to: self)
@@ -109,17 +160,57 @@ class StartScene: SKScene{
 
         //addChild(GlobalSettings.shared.backButton)
         
-        /*
-         //debugging for Startbuttons Area
-         let debugRect = SKShapeNode(rect: storebutton)
-         debugRect.strokeColor = SKColor.red
-         debugRect.lineWidth = 2
-         debugRect.zPosition = 1
-         addChild(debugRect)
-         */
-        
     }
-    
+
+    func createButton(rect: CGRect, backgroundColor: SKColor, labelText: String, labelColor: SKColor) -> SKNode {
+        let buttonNode = SKNode()
+        buttonNode.position = CGPoint(x: rect.origin.x, y: rect.origin.y)
+
+        // Base button background
+        let background = SKShapeNode(rect: CGRect(origin: .zero, size: rect.size), cornerRadius: 12)
+        background.fillColor = backgroundColor
+        background.lineWidth = 2
+        background.glowWidth = 3
+        background.zPosition = 1
+        buttonNode.addChild(background)
+
+        // OPTIONAL: Glowing layer behind for pulse effect
+        if labelText == "START" {
+            let glow = SKShapeNode(rect: CGRect(origin: .zero, size: rect.size), cornerRadius: 12)
+            glow.fillColor = backgroundColor
+            glow.strokeColor = backgroundColor
+            glow.alpha = 0.6
+            glow.setScale(1.0)
+            glow.zPosition = 1  // Behind the main button
+            glow.glowWidth = 15
+            buttonNode.addChild(glow)
+
+            let grow = SKAction.scale(to: 1.05, duration: 0.6)
+            let fade = SKAction.fadeAlpha(to: 0.95, duration: 0.6)
+            let shrink = SKAction.scale(to: 1.0, duration: 0.6)
+            let fadeOut = SKAction.fadeAlpha(to: 0.6, duration: 0.6)
+            let pulse = SKAction.sequence([SKAction.group([grow, fade]),
+                                           SKAction.group([shrink, fadeOut])])
+            glow.run(SKAction.repeatForever(pulse))
+        }
+
+        // Label
+        let label = SKLabelNode(text: labelText)
+        label.fontName = "AvenirNext-Bold"
+        label.fontSize = 22
+        label.fontColor = labelColor
+        label.verticalAlignmentMode = .center
+        label.position = CGPoint(x: rect.size.width / 2, y: rect.size.height / 2)
+        label.zPosition = 2
+        let maxLabelWidth = rect.size.width - 10
+        while label.frame.width > maxLabelWidth && label.fontSize > 10 {
+            label.fontSize -= 1
+        }
+        buttonNode.addChild(label)
+
+        return buttonNode
+    }
+
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
@@ -155,7 +246,6 @@ class StartScene: SKScene{
         
         let storebutton = mobile_game_2048.GlobalSettings.shared.storebutton
         if storebutton.contains(location) {
-            print("Store CLICKED")
             self.viewController?.showInterstitialAdIfAvailable()
         
             //Delay for transitions and sound
@@ -180,7 +270,6 @@ class StartScene: SKScene{
         
         let optionsbutton = mobile_game_2048.GlobalSettings.shared.optionsbutton
         if optionsbutton.contains(location) {
-            print("Option CLICKED")
             self.viewController?.showInterstitialAdIfAvailable()
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
