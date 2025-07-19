@@ -11,7 +11,7 @@ class OptionsScene: SKScene {
     var soundToggleButton: SKShapeNode!
     var musicToggleButton: SKShapeNode!
     var themeToggleButton: SKShapeNode!
-    
+    var activePopupLabel: SKLabelNode?
     var isSoundMuted: Bool = false
     var isMusicMuted: Bool = false
     var isLightTheme: Bool = false
@@ -76,6 +76,11 @@ class OptionsScene: SKScene {
     }
 
     func showTogglePopup(text: String) {
+        // Remove the previous popup if it exists
+        activePopupLabel?.removeAllActions()
+        activePopupLabel?.removeFromParent()
+
+        // Create new popup
         let popupLabel = SKLabelNode(text: text)
         popupLabel.fontName = "AvenirNext-Bold"
         popupLabel.fontSize = 22
@@ -83,12 +88,21 @@ class OptionsScene: SKScene {
         popupLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.75)
         popupLabel.zPosition = 100
         popupLabel.alpha = 0
+
+        // Save reference to the current popup
+        activePopupLabel = popupLabel
+
         addChild(popupLabel)
 
         let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 0.3)
         let wait = SKAction.wait(forDuration: 2.0)
         let fadeOut = SKAction.fadeAlpha(to: 0.0, duration: 0.3)
-        let remove = SKAction.removeFromParent()
+        let remove = SKAction.run {
+            popupLabel.removeFromParent()
+            if self.activePopupLabel === popupLabel {
+                self.activePopupLabel = nil
+            }
+        }
         popupLabel.run(.sequence([fadeIn, wait, fadeOut, remove]))
     }
 
