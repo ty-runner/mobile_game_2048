@@ -261,6 +261,11 @@ class StoreScene: SKScene {
 
         viewController?.present(alert, animated: true)
     }
+    func setThemeTo(_ name: String) { //NEED TO ADD BUTTONS TO SELECT COLOR TEMPLATE
+        if colorPackages[name] != nil {
+            ThemeManager.selectedPackage = name
+        }
+    }
 
     // Adds a back button to the specified view.
     private func addBackButton(to view: SKView) {

@@ -250,6 +250,7 @@ class GameScene: SKScene {
         return max(1, Int(log10(Double(absNumber == 0 ? 1 : absNumber))) + 1)
     }
     // Renders the given board and its tiles at a given position.
+    
     func drawBoard(_ board: [[Int]], at position: CGPoint, boardName: String) {
         childNode(withName: boardName)?.removeFromParent()
         
@@ -266,8 +267,10 @@ class GameScene: SKScene {
                 let yPos = CGFloat(row) * -(tileSize + spacing) + (gridSize / 2) - (tileSize / 2)
                 
                 let tileBackground = SKShapeNode(rectOf: CGSize(width: tileSize, height: tileSize), cornerRadius: 8)
-                tileBackground.fillColor = .darkGray
+                //tileBackground.fillColor = .darkGray
+                tileBackground.fillColor = colorForValue(board[row][col])
                 tileBackground.strokeColor = .gray
+                
                 tileBackground.position = CGPoint(x: xPos, y: yPos)
                 boardNode.addChild(tileBackground)
                 
@@ -295,7 +298,12 @@ class GameScene: SKScene {
         spawnTile(on: &board2)
         spawnTile(on: &board2)
     }
-    
+    func colorForValue(_ value: Int) -> UIColor {
+        let packageName = ThemeManager.selectedPackage
+        let package = colorPackages[packageName] ?? colorPackages["classic"]!
+        return package[value] ?? UIColor.lightGray
+    }
+
     // Randomly places a 2 or 4 tile on an empty cell in the board.
     func spawnTile(on board: inout [[Int]]) {
         let emptyTiles = board.enumerated().flatMap { row, cols in
