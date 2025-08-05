@@ -29,5 +29,5 @@ let colorPackages: [String: [Int: UIColor]] = [
     ]
 ]
 
-let defaultColorPackage = "vaporwave"
+let defaultColorPackage = "classic"
 
