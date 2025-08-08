@@ -335,6 +335,7 @@ class GameScene: SKScene {
         for node in tappedNodes {
             if node.name == "restartButton" {
                 let newScene = GameScene(size: size)
+                newScene.viewController = self.viewController //NECESSARY TO RESET VIEW CONTROLLER ANYTIME TRANSITIONING FROM SCENES FOR ADS
                 newScene.scaleMode = scaleMode
                 view?.presentScene(newScene, transition: SKTransition.fade(withDuration: 0.5))
                 return

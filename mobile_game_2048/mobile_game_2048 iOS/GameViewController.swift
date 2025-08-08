@@ -73,21 +73,26 @@ class GameViewController: UIViewController, BannerViewDelegate, FullScreenConten
         // 1. Authenticate Game Center
         await withCheckedContinuation { continuation in
             let localPlayer = GKLocalPlayer.local
+            var didResume = false
             localPlayer.authenticateHandler = { vc, error in
                 DispatchQueue.main.async {
                     if let vc = vc {
-                        // Present the Game Center authentication view controller.
                         self.present(vc, animated: true)
-                    } else if localPlayer.isAuthenticated {
-                        print("✅ Game Center Authenticated as \(localPlayer.alias)")
                     } else {
-                        print("❌ Game Center Not Authenticated")
-                        if let error = error {
-                            print("Error: \(error.localizedDescription)")
+                        if localPlayer.isAuthenticated {
+                            print("✅ Game Center Authenticated as \(localPlayer.alias)")
+                        } else {
+                            print("❌ Game Center Not Authenticated")
+                            if let error = error {
+                                print("Error: \(error.localizedDescription)")
+                            }
+                        }
+                        updateProgress()
+                        if !didResume {
+                            continuation.resume()
+                            didResume = true
                         }
                     }
-                    updateProgress()
-                    continuation.resume()
                 }
             }
         }

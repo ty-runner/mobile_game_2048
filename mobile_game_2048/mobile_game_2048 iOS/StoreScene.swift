@@ -16,9 +16,12 @@ class StoreScene: SKScene {
     private let storeBackground = SKSpriteNode(imageNamed: "StoreScene")
 
     // Arrays containing the values, costs, and image names for the different coin packs.
+    //These arrays all have to be the same size
     private let goldValues = [5000, 10000, 20000, 50000]
     private let goldCosts = ["$0.99", "$4.99", "$9.99", "$49.99"]
     private let goldImageNames = ["CashStack", "CashPile", "CashChest", "CashVault"]
+    private let SkinNames = ["DEFAULT","8-BIT FOREST","TOKYO 2048", "CORAL COVE"]
+    private let Skins = ["background", "8bit", "Cyberpunk", "CoralCove"]
 
     // Arrays containing the labels, prices, and other data for the unlockable features.
     private let unlockLabels = ["DEFAULT", "UNLOCK", "UNLOCK", "UNLOCK"]
@@ -69,8 +72,9 @@ class StoreScene: SKScene {
         // Calculate the height of the coin region.
         let coinRegionHeight: CGFloat = size.height * 0.13
         
+        let bannerHeight = viewController?.bannerView?.frame.height ?? 60
         // Create a frame for the scroll view.
-        let scrollFrame = CGRect(x: 0, y: coinRegionHeight, width: view.frame.size.width, height: view.frame.size.height - coinRegionHeight)
+        let scrollFrame = CGRect(x: 0, y: coinRegionHeight, width: view.frame.size.width, height: view.frame.size.height - coinRegionHeight - bannerHeight)
         
         // Initialize the scroll view.
         scrollView = UIScrollView(frame: scrollFrame)
@@ -141,12 +145,41 @@ class StoreScene: SKScene {
 
             // Add a buy button to the container.
             addBuyButton(to: containerView, frame: containerView.bounds, tag: i + 1)
+            
         }
-
+        
         // Set the content size of the scroll view.
         let maxY = storeContentView.subviews.map { $0.frame.maxY }.max() ?? scrollFrame.height
-        scrollView.contentSize = CGSize(width: scrollFrame.width, height: maxY + 60)
 
+        // Add a final container for the "No Ads" purchase
+        let noAdsContainerHeight: CGFloat = 80
+        let noAdsContainerY: CGFloat = maxY + 20
+
+        let noAdsContainer = UIView(frame: CGRect(
+            x: 20,
+            y: noAdsContainerY,
+            width: scrollFrame.width - 40,
+            height: noAdsContainerHeight
+        ))
+        noAdsContainer.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+        noAdsContainer.layer.cornerRadius = 15
+        noAdsContainer.layer.borderWidth = 2
+        noAdsContainer.layer.borderColor = UIColor.white.cgColor
+        noAdsContainer.clipsToBounds = true
+        storeContentView.addSubview(noAdsContainer)
+
+        // Add label or button inside the container
+        let noAdsButton = UIButton(type: .system)
+        noAdsButton.frame = CGRect(x: 0, y: 0, width: noAdsContainer.bounds.width, height: noAdsContainer.bounds.height)
+        noAdsButton.setTitle("Buy No-Ads Version - $2.99", for: .normal)
+        noAdsButton.setTitleColor(.white, for: .normal)
+        noAdsButton.titleLabel?.font = UIFont(name: "AvenirNext-Bold", size: 20)
+        noAdsButton.backgroundColor = .clear
+        noAdsButton.addTarget(self, action: #selector(buyNoAdsTapped), for: .touchUpInside)
+        noAdsContainer.addSubview(noAdsButton)
+
+        storeContentView.frame.size.height = maxY + 140
+        scrollView.contentSize = CGSize(width: scrollFrame.width, height: maxY + 140)
     }
 
     // Adds a buy button to the specified view.
@@ -172,12 +205,22 @@ class StoreScene: SKScene {
         containerView.layer.borderColor = UIColor.white.cgColor
         containerView.clipsToBounds = true
         parentView.addSubview(containerView)
+        
+        // 👉 Add background image from Skins array if available
+        if index < Skins.count {
+            let backgroundImageView = UIImageView(frame: containerView.bounds)
+            backgroundImageView.image = UIImage(named: Skins[index])
+            backgroundImageView.contentMode = .scaleAspectFill
+            backgroundImageView.clipsToBounds = true
+            containerView.addSubview(backgroundImageView)
+            containerView.sendSubviewToBack(backgroundImageView)
+        }
 
         // Get the price of the unlockable feature.
         let price = unlockPrices[index]
 
         // Add a label to display the price.
-        let priceLabel = UILabel(frame: CGRect(x: 0, y: 20, width: containerView.bounds.width, height: 30))
+        let priceLabel = UILabel(frame: CGRect(x: 0, y: 50, width: containerView.bounds.width, height: 30))
         priceLabel.text = "Cost: \(price.formattedWithSeparator()) coins"
         priceLabel.textAlignment = .center
         priceLabel.textColor = .white
@@ -189,6 +232,16 @@ class StoreScene: SKScene {
         let buttonWidth: CGFloat = 200
         let buttonX = (containerView.frame.width - buttonWidth) / 2
         let buttonY = containerView.frame.height - buttonHeight - 20
+        
+        let Skintitles = SkinNames[index]
+        
+        let BackgroundLabel = UILabel(frame: CGRect(x: 0, y: 20, width: containerView.bounds.width, height: 30))
+        BackgroundLabel.text = Skintitles
+        BackgroundLabel.textAlignment = .center
+        BackgroundLabel.textColor = .white
+        BackgroundLabel.font = UIFont(name: "AvenirNext-Bold", size: 24)
+        containerView.addSubview(BackgroundLabel)
+        
 
         // Create the unlock button.
         // Create the unlock button.
@@ -298,6 +351,24 @@ class StoreScene: SKScene {
             startScene.viewController = self.viewController
             view.presentScene(startScene, transition: transition)
         }
+    }
+    
+    @objc private func buyNoAdsTapped() {
+        let alert = UIAlertController(
+            title: "Buy No-Ads",
+            message: "Would you like to purchase the No-Ads version for $9.99?",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Confirm", style: .default, handler: { _ in
+            // Handle purchase logic here
+            GameData.shared.hasNoAds = true
+            print("User purchased No-Ads version.")
+            
+            // You can also hide ads now:
+            self.viewController?.bannerView?.isHidden = true
+        }))
+        viewController?.present(alert, animated: true)
     }
 }
 
