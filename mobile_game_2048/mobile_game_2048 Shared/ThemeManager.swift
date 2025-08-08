@@ -22,4 +22,5 @@ struct ThemeManager {
             print("⚠️ Invalid theme name: \(name). No changes made.")
         }
     }
+
 }
