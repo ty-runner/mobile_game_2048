@@ -146,6 +146,7 @@ class StoreScene: SKScene {
         // Set the content size of the scroll view.
         let maxY = storeContentView.subviews.map { $0.frame.maxY }.max() ?? scrollFrame.height
         scrollView.contentSize = CGSize(width: scrollFrame.width, height: maxY + 60)
+
     }
 
     // Adds a buy button to the specified view.
@@ -190,21 +191,28 @@ class StoreScene: SKScene {
         let buttonY = containerView.frame.height - buttonHeight - 20
 
         // Create the unlock button.
+        // Create the unlock button.
         let unlockButton = UIButton(frame: CGRect(x: buttonX, y: buttonY, width: buttonWidth, height: buttonHeight))
-        unlockButton.setTitle(labelText, for: .normal)
-        unlockButton.backgroundColor = (index == 0) ? .gray : .red
         unlockButton.layer.cornerRadius = 10
         unlockButton.clipsToBounds = true
         unlockButton.tag = 1000 + index
 
-        // Add a target to the unlock button if it's not the default feature.
-        if index != 0 {
-            unlockButton.addTarget(self, action: #selector(unlockButtonTapped(_:)), for: .touchUpInside)
+        // Check if this feature is already unlocked
+        if GameData.shared.unlockedFeatures.contains(index) {
+            unlockButton.setTitle("UNLOCKED", for: .normal)
+            unlockButton.backgroundColor = .gray
+            unlockButton.isEnabled = false
         } else {
-            unlockButton.isUserInteractionEnabled = false
+            unlockButton.setTitle(labelText, for: .normal)
+            unlockButton.backgroundColor = (index == 0) ? .gray : .red
+            unlockButton.isEnabled = index != 0
+            if index != 0 {
+                unlockButton.addTarget(self, action: #selector(unlockButtonTapped(_:)), for: .touchUpInside)
+            }
         }
 
         containerView.addSubview(unlockButton)
+
 
         // Return the maximum y value of the container view plus some padding.
         return containerView.frame.maxY + 30
@@ -227,13 +235,16 @@ class StoreScene: SKScene {
             }
 
             // Mark the feature as unlocked.
+            
             GameData.shared.unlockedFeatures.insert(index)
-
+            print(GameData.shared.unlockedFeatures)
             // Update the unlock button's appearance.
             sender.setTitle("UNLOCKED", for: .normal)
             sender.backgroundColor = .gray
             sender.isEnabled = false
             print("Unlocked feature at index \(index) for \(cost) coins.")
+            let themeName = indexToTheme[index]!
+            ThemeManager.selectTheme(named: themeName)
         } else {
             // Display an alert if the player doesn't have enough coins.
             let alert = UIAlertController(title: "Not Enough Coins", message: "You need \(cost - GameData.shared.coins) more coins to unlock this.", preferredStyle: .alert)
@@ -247,7 +258,7 @@ class StoreScene: SKScene {
         // Get the tag of the buy button.
         let tag = sender.tag
         guard tag >= 1 && tag <= goldValues.count else { return }
-
+        print("Buy button tapped!")
         // Display a confirmation alert.
         let alert = UIAlertController(title: "Purchase", message: "Are you sure you want to buy \(goldValues[tag - 1].formattedWithSeparator()) coins?", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
@@ -260,11 +271,6 @@ class StoreScene: SKScene {
         }))
 
         viewController?.present(alert, animated: true)
-    }
-    func setThemeTo(_ name: String) { //NEED TO ADD BUTTONS TO SELECT COLOR TEMPLATE
-        if colorPackages[name] != nil {
-            ThemeManager.selectedPackage = name
-        }
     }
 
     // Adds a back button to the specified view.
