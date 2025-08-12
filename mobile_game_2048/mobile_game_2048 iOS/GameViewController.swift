@@ -11,107 +11,116 @@ import GameplayKit
 import GameKit
 import GoogleMobileAds
 
-/**
- The main view controller for the game, responsible for handling game center authentication,
- loading and displaying ads, and presenting the game scenes.
- */
 class GameViewController: UIViewController, BannerViewDelegate, FullScreenContentDelegate {
     
-    // MARK: - Ad Properties
-    
-    /// The banner view to display ads at the bottom of the screen.
     var bannerView: BannerView!
-    
-    /// The interstitial ad to display between game scenes.
     var interstitial: InterstitialAd?
-    
-    /// The rewarded ad to display when the user wants to earn a reward.
     private var rewardedAd: RewardedAd?
-    
-    /// The loading scene to display while the game is initializing.
     private var loadingScene: LoadingScene?
     
-    // MARK: - View Lifecycle
+    override func loadView() {
+            super.loadView()
+            view.backgroundColor = .black
+        }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Present the loading scene first to display a progress bar.
-        let skView = self.view as! SKView
+        // Present loading scene
+        if let skView = self.view as? SKView {
+            skView.backgroundColor = .black  // ✅ instant black background
+        }
         let loadingScene = LoadingScene(size: view.bounds.size)
         loadingScene.scaleMode = .aspectFill
-        skView.presentScene(loadingScene)
+        loadingScene.viewController = self // ✅ Pass self to LoadingScene
+        (self.view as! SKView).presentScene(loadingScene)
         self.loadingScene = loadingScene
         
-        // Run the initial loading tasks asynchronously.
+        // Tell loading scene there are 2 main tasks: Game Center + Ads
+        loadingScene.setTotalTasks(2)
+        
         Task {
             await runInitialLoading()
         }
     }
     
-    // MARK: - Initial Loading
-    
-    /**
-     Runs the initial loading tasks, including:
-     1. Authenticating Game Center
-     2. Loading the banner ad
-     3. Loading the interstitial ad
-     4. Loading the rewarded ad
-     */
     private func runInitialLoading() async {
-        let totalTasks = 4
-        var completedTasks = 0
-        
-        // Updates the progress bar in the loading scene.
-        func updateProgress() {
-            completedTasks += 1
-            DispatchQueue.main.async {
-                self.loadingScene?.progress = CGFloat(completedTasks) / CGFloat(totalTasks)
-            }
+        // --- TASK 1: Authenticate Game Center ---
+        await authenticateGameCenter()
+        DispatchQueue.main.async {
+            self.loadingScene?.gameCenterLoaded = true
+            self.loadingScene?.markTaskComplete()
         }
         
-        // 1. Authenticate Game Center
+        // --- TASK 2: Load Ads ---
+        await loadAllAds()
+        DispatchQueue.main.async {
+            self.loadingScene?.adsLoaded = true
+            self.loadingScene?.markTaskComplete()
+        }
+    }
+    
+    // MARK: - Game Center Authentication
+    private func authenticateGameCenter() async {
         await withCheckedContinuation { continuation in
-            let localPlayer = GKLocalPlayer.local
-            var didResume = false
-            localPlayer.authenticateHandler = { vc, error in
-                DispatchQueue.main.async {
-                    if let vc = vc {
-                        self.present(vc, animated: true)
+            GKLocalPlayer.local.authenticateHandler = { vc, error in
+                if let vc = vc {
+                    self.present(vc, animated: true)
+                } else if error != nil {
+                    print("Game Center authentication failed: \(error!.localizedDescription)")
+                } else {
+                    print("Game Center authentication successful")
+                }
+                continuation.resume()
+            }
+        }
+    }
+    
+    private func loadAllAds() async {
+        await withCheckedContinuation { continuation in
+            
+            // --- Load Banner ---
+            bannerView = BannerView(adSize: AdSizeBanner)
+            bannerView.adUnitID = "ca-app-pub-3940256099942544/2435281174"
+            bannerView.rootViewController = self
+            bannerView.delegate = self
+            bannerView.load(Request())
+
+            // --- Load Interstitial ---
+            InterstitialAd.load(
+                with: "ca-app-pub-3940256099942544/4411468910",
+                request: Request()
+            ) { ad, error in
+                
+                if let error = error {
+                    print("Failed to load interstitial: \(error.localizedDescription)")
+                    // ❌ Don't mark ads loaded yet if you need interstitial before start
+                    continuation.resume()
+                    return
+                }
+                
+                self.interstitial = ad
+                self.interstitial?.fullScreenContentDelegate = self
+                print("Interstitial ad loaded")
+                
+                // --- Load Rewarded ---
+                RewardedAd.load(
+                    with: "ca-app-pub-3940256099942544/1712485313",
+                    request: Request()
+                ) { ad, error in
+                    
+                    if let error = error {
+                        print("Failed to load rewarded ad: \(error.localizedDescription)")
                     } else {
-                        if localPlayer.isAuthenticated {
-                            print("✅ Game Center Authenticated as \(localPlayer.alias)")
-                        } else {
-                            print("❌ Game Center Not Authenticated")
-                            if let error = error {
-                                print("Error: \(error.localizedDescription)")
-                            }
-                        }
-                        updateProgress()
-                        if !didResume {
-                            continuation.resume()
-                            didResume = true
-                        }
+                        self.rewardedAd = ad
+                        self.rewardedAd?.fullScreenContentDelegate = self
+                        print("Rewarded ad loaded")
                     }
+                    
+                    // ✅ Now mark ads as fully loaded
+                    continuation.resume()
                 }
             }
-        }
-        
-        // 2. Load Banner Ad
-        let bannerLoaded = await loadBannerAd()
-        print("Banner loaded: \(bannerLoaded)")
-        updateProgress()
-        
-        // 3 & 4 Load Interstitial and Rewarded ads concurrently
-        await withTaskGroup(of: Void.self) { group in
-            group.addTask { await self.loadInterstitial() }
-            group.addTask { await self.loadRewardedAd() }
-        }
-        updateProgress()
-        
-        // All done, present the StartScene.
-        DispatchQueue.main.async {
-            self.presentStartScene()
         }
     }
     
@@ -173,16 +182,6 @@ class GameViewController: UIViewController, BannerViewDelegate, FullScreenConten
     
     // MARK: - Scene Presentation
     
-    /**
-     Presents the StartScene.
-     */
-    private func presentStartScene() {
-        let skView = self.view as! SKView
-        let startScene = StartScene(size: view.bounds.size)
-        startScene.viewController = self
-        startScene.scaleMode = .aspectFill
-        skView.presentScene(startScene, transition: SKTransition.fade(withDuration: 0.5))
-    }
     
     // MARK: - BannerViewDelegate
     
@@ -313,12 +312,14 @@ class GameViewController: UIViewController, BannerViewDelegate, FullScreenConten
      Shows the interstitial ad if it is available.
      */
     func showInterstitialAdIfAvailable() {
-        if let interstitial = interstitial {
-            DispatchQueue.main.async {
-                interstitial.present(from: self)
-            }
-        } else {
-            print("Interstitial ad wasn't ready")
+        guard let interstitial = interstitial else {
+            print("Interstitial ad wasn't ready, loading now...")
+            Task { await self.loadInterstitial() }
+            return
+        }
+        
+        DispatchQueue.main.async {
+            interstitial.present(from: self)
         }
     }
     

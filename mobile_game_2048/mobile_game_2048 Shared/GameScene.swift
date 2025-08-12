@@ -12,9 +12,6 @@ class GameScene: SKScene {
     
     weak var viewController: GameViewController?
 
-    let background = SKSpriteNode(imageNamed: "SBackground")
-
-    //let background = SKSpriteNode(imageNamed: "background")
     var board1: [[Int]] = Array(repeating: Array(repeating: 0, count: 4), count: 4)
     var board2: [[Int]] = Array(repeating: Array(repeating: 0, count: 4), count: 4)
     let tileSize: CGFloat = 60  // Tile size
@@ -35,7 +32,7 @@ class GameScene: SKScene {
     // Called when the scene is first presented. Sets up audio, boards, tiles, and UI elements.
     override func didMove(to view: SKView) {
         GlobalSettings.shared.setupAudio()
-        videoNode = VideoHelper.playBackgroundVideo(on: self)
+
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: .mixWithOthers)
             try? AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
@@ -43,8 +40,25 @@ class GameScene: SKScene {
         } catch {
             print("Failed to set up AVAudioSession: \(error)")
         }
-        //reset score
         
+        // Get the selected video name from the ThemeManager
+        let selectedVideoName = ThemeManager.selectedVideo
+        
+        // Use your VideoHelper to play the background video.
+        // It will now use the video associated with the current theme.
+        videoNode = VideoHelper.playBackgroundVideo(on: self, named: selectedVideoName)
+        
+        // If the video helper returns nil (because the file wasn't found),
+       // use a static image as a fallback.
+       if videoNode == nil {
+           let staticBackground = SKSpriteNode(imageNamed: selectedVideoName)
+           staticBackground.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
+           staticBackground.size = self.size
+           staticBackground.zPosition = -1
+           addChild(staticBackground)
+       }
+
+        //reset score
         GameData.shared.score = 0;
         scoreRegion = ScoreRegion(score: GameData.shared.score)
         scoreRegion.position = CGPoint(x: size.width / 2.2, y: size.height - 100)

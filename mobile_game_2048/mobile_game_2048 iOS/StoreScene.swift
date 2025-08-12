@@ -20,12 +20,12 @@ class StoreScene: SKScene {
     private let goldValues = [5000, 10000, 20000, 50000]
     private let goldCosts = ["$0.99", "$4.99", "$9.99", "$49.99"]
     private let goldImageNames = ["CashStack", "CashPile", "CashChest", "CashVault"]
-    private let SkinNames = ["DEFAULT","8-BIT FOREST","TOKYO 2048", "CORAL COVE"]
-    private let Skins = ["background", "8bit", "Cyberpunk", "CoralCove"]
+    private let SkinNames = ["DEFAULT","ABSTRACT","8-BIT FOREST","CORAL COVE","TOKYO 2048"]
+    private let Skins = ["background", "Abstract", "8bit", "CoralCove", "Cyberpunk"]
 
     // Arrays containing the labels, prices, and other data for the unlockable features.
-    private let unlockLabels = ["DEFAULT", "UNLOCK", "UNLOCK", "UNLOCK"]
-    private let unlockPrices = [0, 5000, 10000, 20000]
+    private let unlockLabels = ["DEFAULT", "UNLOCK", "UNLOCK", "UNLOCK", "UNLOCK"]
+    private let unlockPrices = [0, 5000, 10000, 20000, 50000]
 
     // A reference to the back button.
     private var backButton: UIButton?
@@ -70,7 +70,7 @@ class StoreScene: SKScene {
     // Sets up the scroll view and its content.
     private func setupScrollView(in view: SKView) {
         // Calculate the height of the coin region.
-        let coinRegionHeight: CGFloat = size.height * 0.13
+        let coinRegionHeight: CGFloat = view.frame.size.height * 0.155
         
         let bannerHeight = viewController?.bannerView?.frame.height ?? 60
         // Create a frame for the scroll view.
@@ -171,7 +171,7 @@ class StoreScene: SKScene {
         // Add label or button inside the container
         let noAdsButton = UIButton(type: .system)
         noAdsButton.frame = CGRect(x: 0, y: 0, width: noAdsContainer.bounds.width, height: noAdsContainer.bounds.height)
-        noAdsButton.setTitle("Buy No-Ads Version - $2.99", for: .normal)
+        noAdsButton.setTitle("Buy No-Ads Version - $9.99", for: .normal)
         noAdsButton.setTitleColor(.white, for: .normal)
         noAdsButton.titleLabel?.font = UIFont(name: "AvenirNext-Bold", size: 20)
         noAdsButton.backgroundColor = .clear
@@ -297,7 +297,7 @@ class StoreScene: SKScene {
             sender.isEnabled = false
             print("Unlocked feature at index \(index) for \(cost) coins.")
             let themeName = indexToTheme[index]!
-            ThemeManager.selectTheme(named: themeName)
+            ThemeManager.selectTheme(named: themeName) // This call now updates the video name as well.
         } else {
             // Display an alert if the player doesn't have enough coins.
             let alert = UIAlertController(title: "Not Enough Coins", message: "You need \(cost - GameData.shared.coins) more coins to unlock this.", preferredStyle: .alert)

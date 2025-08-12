@@ -52,9 +52,10 @@
 				Actions.sks,
 				Assets.xcassets,
 				Backgrounds/8bit.mp4,
-				"Backgrounds/4941c2ef-bb13-4dfa-aeea-0999036c320f.mp4",
-				Backgrounds/background.mp4,
+				Backgrounds/Abstract.mp4,
+				Backgrounds/CoralCove.mp4,
 				Backgrounds/Cyberpunk.mp4,
+				Backgrounds/Default.png,
 				GameScene.sks,
 				GameScene.swift,
 			);
@@ -66,9 +67,10 @@
 				Actions.sks,
 				Assets.xcassets,
 				Backgrounds/8bit.mp4,
-				"Backgrounds/4941c2ef-bb13-4dfa-aeea-0999036c320f.mp4",
-				Backgrounds/background.mp4,
+				Backgrounds/Abstract.mp4,
+				Backgrounds/CoralCove.mp4,
 				Backgrounds/Cyberpunk.mp4,
+				Backgrounds/Default.png,
 				GameScene.sks,
 				GameScene.swift,
 			);
@@ -445,6 +447,7 @@
 				DEVELOPMENT_TEAM = 9TXQH95V62;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "mobile-game-2048-iOS-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = CASC8DED;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -478,6 +481,7 @@
 				DEVELOPMENT_TEAM = 9TXQH95V62;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "mobile-game-2048-iOS-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = CASC8DED;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;

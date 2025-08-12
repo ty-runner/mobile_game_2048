@@ -20,7 +20,10 @@ class CoinRegion: SKNode {
         let rect = CGRect(x: -75, y: -25, width: 150, height: 50)
         background = SKShapeNode(rect: rect, cornerRadius: 20) // Rounded corners
         background.fillColor = .darkGray
-        background.strokeColor = .clear
+        background.strokeColor = .white
+        background.alpha = 0.9
+        background.lineWidth = 2         // match start buttons
+        background.glowWidth = 3         // white glow halo
         background.zPosition = 1
         addChild(background)
 
@@ -39,7 +42,8 @@ class CoinRegion: SKNode {
         coinLabel.text = "\(coins)"
         coinLabel.fontSize = 20
         coinLabel.fontColor = .white
-        coinLabel.position = CGPoint(x: 20, y: -5)
+        coinLabel.verticalAlignmentMode = .center
+        coinLabel.position = CGPoint(x: 20, y: 0) // align center with icon
         coinLabel.zPosition = 2
         addChild(coinLabel)
     }
