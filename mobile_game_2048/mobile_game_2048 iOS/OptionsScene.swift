@@ -31,15 +31,15 @@ class OptionsScene: SKScene {
         logoutButton.fontName = "AvenirNext-Bold"
         logoutButton.fontSize = 24
         logoutButton.fontColor = .white
-        logoutButton.position = CGPoint(x: size.width / 2, y: size.height * 0.20)
+        logoutButton.position = CGPoint(x: size.width / 2, y: size.height * 0.30)
         logoutButton.zPosition = 10
         addChild(logoutButton)
 
         // Title
         let titleLabel = SKLabelNode(text: "OPTIONS")
-        titleLabel.fontName = "AvenirNext-Bold"
+        titleLabel.fontName = "AvenirNext-UltraLight"
         titleLabel.fontSize = 48
-        titleLabel.fontColor = .cyan
+        titleLabel.fontColor = .white
         titleLabel.position = CGPoint(x: size.width / 2, y: size.height - 150)
         titleLabel.zPosition = 2
         addChild(titleLabel)
@@ -51,23 +51,46 @@ class OptionsScene: SKScene {
         addChild(coinRegion)
 
         // Back button
-        let backButton = SKLabelNode(text: "⟵ Back")
-        backButton.fontName = "AvenirNext-Bold"
-        backButton.fontSize = 24
+        let backButton = SKLabelNode(text: "Back")
+        backButton.fontName = "AvenirNext"
+        backButton.fontSize = 18
         backButton.fontColor = .white
         backButton.position = CGPoint(x: 60, y: size.height - 50)
         backButton.name = "backButton"
         backButton.zPosition = 10
         addChild(backButton)
-
+        let musicColor = SKColor(red: 0.0, green: 0.1, blue: 0.9, alpha: 0.9) // blue
+        let soundColor = SKColor(red: 255/255, green: 215/255, blue: 0/255, alpha: 0.8) // yellow
+        let themeColor = SKColor(red: 0.5, green: 0.0, blue: 0.5, alpha: 0.9) // purple
         // Toggle buttons
-        musicToggleButton = createToggleButton(text: "Toggle Music", name: "toggleMusic", yPos: size.height * 0.6)
-        soundToggleButton = createToggleButton(text: "Toggle Sound FX", name: "toggleSound", yPos: size.height * 0.48)
-        themeToggleButton = createToggleButton(text: "Toggle Theme", name: "toggleTheme", yPos: size.height * 0.36)
+        musicToggleButton = createToggleButton(
+            text: "Toggle Music",
+            name: "toggleMusic",
+            yPos: size.height * 0.6,
+            fillColor: musicColor,
+            strokeColor: .white
+        )
+
+        soundToggleButton = createToggleButton(
+            text: "Toggle Sound FX",
+            name: "toggleSound",
+            yPos: size.height * 0.48,
+            fillColor: soundColor,
+            strokeColor: .white
+        )
+
+        /*themeToggleButton = createToggleButton(
+            text: "Toggle Theme",
+            name: "toggleTheme",
+            yPos: size.height * 0.36,
+            fillColor: themeColor,
+            strokeColor: .white
+        )*/
+
 
         addChild(musicToggleButton)
         addChild(soundToggleButton)
-        addChild(themeToggleButton)
+        //addChild(themeToggleButton)
 
         // Load saved toggle states
         isSoundMuted = GlobalSettings.shared.isSoundMuted
@@ -106,10 +129,17 @@ class OptionsScene: SKScene {
         popupLabel.run(.sequence([fadeIn, wait, fadeOut, remove]))
     }
 
-    func createToggleButton(text: String, name: String, yPos: CGFloat) -> SKShapeNode {
+    func createToggleButton(
+        text: String,
+        name: String,
+        yPos: CGFloat,
+        fillColor: SKColor,
+        strokeColor: SKColor
+    ) -> SKShapeNode {
         let button = SKShapeNode(rectOf: CGSize(width: 250, height: 50), cornerRadius: 12)
-        button.fillColor = SKColor(white: 0.1, alpha: 0.85)
-        button.strokeColor = .cyan
+        button.fillColor = fillColor
+        button.strokeColor = strokeColor
+        button.glowWidth = 2         // white glow halo
         button.lineWidth = 2
         button.name = name
         button.position = CGPoint(x: size.width / 2, y: yPos)
@@ -125,6 +155,7 @@ class OptionsScene: SKScene {
 
         return button
     }
+
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
