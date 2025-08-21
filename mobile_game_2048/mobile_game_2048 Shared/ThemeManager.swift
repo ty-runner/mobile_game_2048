@@ -1,5 +1,18 @@
+//
+//  ThemeManager.swift
+//  Cleaned & annotated on 2025-08-16 20:11 UTC
+//
+//  Notes:
+//  - This file has been auto-annotated with documentation comments.
+//  - Risky constructs (force unwraps, \1
+//try! , continuations) are flagged with TODOs.
+//  - No public APIs were intentionally changed.
+//
 import Foundation
 import UIKit
+
+// MARK: - ThemeManager
+
 
 struct ThemeManager {
     private static let selectedColorKey = "classic"

@@ -1,13 +1,14 @@
 import Foundation
 import SpriteKit
 import AVFoundation
+import UIKit
 
 class OptionsScene: SKScene {
 
     weak var viewController: GameViewController?
 
     var OptionScene: SKSpriteNode!
-    
+
     var soundToggleButton: SKShapeNode!
     var musicToggleButton: SKShapeNode!
     var themeToggleButton: SKShapeNode!
@@ -17,7 +18,7 @@ class OptionsScene: SKScene {
     var isLightTheme: Bool = false
 
     override func didMove(to view: SKView) {
-        // Background setup
+        // Background
         let backgroundName = GlobalSettings.shared.isLightTheme ? "lightBackground" : "StoreScene"
         OptionScene = SKSpriteNode(imageNamed: backgroundName)
         OptionScene.position = CGPoint(x: size.width / 2, y: size.height / 2)
@@ -25,21 +26,23 @@ class OptionsScene: SKScene {
         OptionScene.zPosition = 0
         addChild(OptionScene)
 
-        // Logout button
-        let logoutButton = SKLabelNode(text: "Log Out of Game Center")
-        logoutButton.name = "logoutGC"
-        logoutButton.fontName = "AvenirNext-Bold"
-        logoutButton.fontSize = 24
-        logoutButton.fontColor = .white
-        logoutButton.position = CGPoint(x: size.width / 2, y: size.height * 0.20)
-        logoutButton.zPosition = 10
-        addChild(logoutButton)
+        // 🔙 Global overlay back button (safe-area aware, consistent across scenes)
+        if let vc = viewController {
+            GlobalSettings.shared.showOverlayBackButton(in: vc, title: "Back") { [weak self] in
+                guard let self, let vc = self.viewController else { return }
+                let start = StartScene(size: self.size)
+                start.viewController = vc
+                start.scaleMode = self.scaleMode
+                let t = SKTransition.fade(withDuration: 0.5)
+                vc.presentScene(start, transition: t, transitionDuration: 0.5)
+            }
+        }
 
         // Title
         let titleLabel = SKLabelNode(text: "OPTIONS")
-        titleLabel.fontName = "AvenirNext-Bold"
+        titleLabel.fontName = "AvenirNext-UltraLight"
         titleLabel.fontSize = 48
-        titleLabel.fontColor = .cyan
+        titleLabel.fontColor = .white
         titleLabel.position = CGPoint(x: size.width / 2, y: size.height - 150)
         titleLabel.zPosition = 2
         addChild(titleLabel)
@@ -50,37 +53,62 @@ class OptionsScene: SKScene {
         coinRegion.position = CGPoint(x: size.width - 100, y: size.height - 50)
         addChild(coinRegion)
 
-        // Back button
-        let backButton = SKLabelNode(text: "⟵ Back")
-        backButton.fontName = "AvenirNext-Bold"
-        backButton.fontSize = 24
-        backButton.fontColor = .white
-        backButton.position = CGPoint(x: 60, y: size.height - 50)
-        backButton.name = "backButton"
-        backButton.zPosition = 10
-        addChild(backButton)
-
         // Toggle buttons
-        musicToggleButton = createToggleButton(text: "Toggle Music", name: "toggleMusic", yPos: size.height * 0.6)
-        soundToggleButton = createToggleButton(text: "Toggle Sound FX", name: "toggleSound", yPos: size.height * 0.48)
-        themeToggleButton = createToggleButton(text: "Toggle Theme", name: "toggleTheme", yPos: size.height * 0.36)
+        let musicColor  = SKColor(red: 0.0,   green: 0.1,  blue: 0.9,  alpha: 0.9)   // blue
+        let soundColor  = SKColor(red: 1.0,   green: 0.84, blue: 0.0,  alpha: 0.8)   // yellow
+        let themeColor  = SKColor(red: 0.5,   green: 0.0,  blue: 0.5,  alpha: 0.9)   // purple
+
+        musicToggleButton = createToggleButton(
+            text: "Toggle Music",
+            name: "toggleMusic",
+            yPos: size.height * 0.60,
+            fillColor: musicColor,
+            strokeColor: .white
+        )
+
+        soundToggleButton = createToggleButton(
+            text: "Toggle Sound FX",
+            name: "toggleSound",
+            yPos: size.height * 0.48,
+            fillColor: soundColor,
+            strokeColor: .white
+        )
+
+        // If you want theme toggle back, uncomment:
+        /*
+        themeToggleButton = createToggleButton(
+            text: "Toggle Theme",
+            name: "toggleTheme",
+            yPos: size.height * 0.36,
+            fillColor: themeColor,
+            strokeColor: .white
+        )
+        */
 
         addChild(musicToggleButton)
         addChild(soundToggleButton)
-        addChild(themeToggleButton)
+        // addChild(themeToggleButton)
+
+        // Logout button
+        let logoutButton = SKLabelNode(text: "Log Out of Game Center")
+        logoutButton.name = "logoutGC"
+        logoutButton.fontName = "AvenirNext-Bold"
+        logoutButton.fontSize = 24
+        logoutButton.fontColor = .white
+        logoutButton.position = CGPoint(x: size.width / 2, y: size.height * 0.30)
+        logoutButton.zPosition = 10
+        addChild(logoutButton)
 
         // Load saved toggle states
-        isSoundMuted = GlobalSettings.shared.isSoundMuted
-        isMusicMuted = GlobalSettings.shared.isMusicMuted
-        isLightTheme = GlobalSettings.shared.isLightTheme
+        isSoundMuted  = GlobalSettings.shared.isSoundMuted
+        isMusicMuted  = GlobalSettings.shared.isMusicMuted
+        isLightTheme  = GlobalSettings.shared.isLightTheme
     }
 
     func showTogglePopup(text: String) {
-        // Remove the previous popup if it exists
         activePopupLabel?.removeAllActions()
         activePopupLabel?.removeFromParent()
 
-        // Create new popup
         let popupLabel = SKLabelNode(text: text)
         popupLabel.fontName = "AvenirNext-Bold"
         popupLabel.fontSize = 22
@@ -88,28 +116,32 @@ class OptionsScene: SKScene {
         popupLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.75)
         popupLabel.zPosition = 100
         popupLabel.alpha = 0
-
-        // Save reference to the current popup
         activePopupLabel = popupLabel
-
         addChild(popupLabel)
 
-        let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 0.3)
-        let wait = SKAction.wait(forDuration: 2.0)
+        let fadeIn  = SKAction.fadeAlpha(to: 1.0, duration: 0.3)
+        let wait    = SKAction.wait(forDuration: 2.0)
         let fadeOut = SKAction.fadeAlpha(to: 0.0, duration: 0.3)
-        let remove = SKAction.run {
+        let remove  = SKAction.run { [weak self] in
             popupLabel.removeFromParent()
-            if self.activePopupLabel === popupLabel {
-                self.activePopupLabel = nil
+            if self?.activePopupLabel === popupLabel {
+                self?.activePopupLabel = nil
             }
         }
         popupLabel.run(.sequence([fadeIn, wait, fadeOut, remove]))
     }
 
-    func createToggleButton(text: String, name: String, yPos: CGFloat) -> SKShapeNode {
+    func createToggleButton(
+        text: String,
+        name: String,
+        yPos: CGFloat,
+        fillColor: SKColor,
+        strokeColor: SKColor
+    ) -> SKShapeNode {
         let button = SKShapeNode(rectOf: CGSize(width: 250, height: 50), cornerRadius: 12)
-        button.fillColor = SKColor(white: 0.1, alpha: 0.85)
-        button.strokeColor = .cyan
+        button.fillColor = fillColor
+        button.strokeColor = strokeColor
+        button.glowWidth = 2
         button.lineWidth = 2
         button.name = name
         button.position = CGPoint(x: size.width / 2, y: yPos)
@@ -129,15 +161,13 @@ class OptionsScene: SKScene {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
-        guard let tappedNode = self.atPoint(location) as? SKNode else { return }
-
-        let name = tappedNode.name
+        let tappedNode = atPoint(location)
 
         if let labelNode = tappedNode as? SKLabelNode {
             labelNode.run(.scale(to: 0.9, duration: 0.1))
         }
 
-        switch name {
+        switch tappedNode.name {
         case "toggleMusic":
             isMusicMuted.toggle()
             GlobalSettings.shared.isMusicMuted = isMusicMuted
@@ -155,8 +185,6 @@ class OptionsScene: SKScene {
         case "toggleTheme":
             isLightTheme.toggle()
             GlobalSettings.shared.isLightTheme = isLightTheme
-
-            // Swap background dynamically
             OptionScene.removeFromParent()
             let newBackgroundName = isLightTheme ? "lightBackground" : "StoreScene"
             OptionScene = SKSpriteNode(imageNamed: newBackgroundName)
@@ -179,20 +207,6 @@ class OptionsScene: SKScene {
                     }
                 })
                 vc.present(alert, animated: true)
-            }
-
-        case "backButton":
-            if GlobalSettings.shared.isSoundMuted {
-                GlobalSettings.shared.transitionAudioPlayer?.stop()
-            } else {
-                GlobalSettings.shared.transitionAudioPlayer?.volume = 0.5
-                GlobalSettings.shared.playTransitionAudio()
-            }
-            let startScene = StartScene(size: size)
-            startScene.viewController = self.viewController
-            view?.presentScene(startScene, transition: .fade(withDuration: 1.0))
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                GlobalSettings.shared.stopTransitionAudio()
             }
 
         default:

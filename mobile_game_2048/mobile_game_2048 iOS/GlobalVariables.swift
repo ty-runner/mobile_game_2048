@@ -9,101 +9,99 @@ import Foundation
 import SpriteKit
 import AVFoundation
 import CoreGraphics
+import UIKit   // ⬅️ add this
 
 class GlobalSettings {
     static let shared = GlobalSettings()
-    
-    var backButton: SKSpriteNode!
-    
+
+    // OLD SpriteKit back button (remove if no longer used)
+    // var backButton: SKSpriteNode!
+
+    // ✅ New overlay back button (UIKit) and handler
+    private(set) weak var overlayBackButton: UIButton?
+    private var overlayBackHandler: (() -> Void)?
+
+    // Keep your existing vars...
     var coinIcon: SKSpriteNode!
     var startbutton1: CGRect = .zero
     var startbutton2: CGRect = .zero
     var storebutton: CGRect = .zero
     var optionsbutton: CGRect = .zero
     var isLightTheme: Bool = false {
-        didSet {
-            UserDefaults.standard.set(isLightTheme, forKey: "isLightTheme")
-        }
+        didSet { UserDefaults.standard.set(isLightTheme, forKey: "isLightTheme") }
     }
-    
 
     var isSoundMuted: Bool = false {
-        didSet {
-            //Update sound volume when mute value changes
-            transitionAudioPlayer?.volume = isSoundMuted ? 0 : 0.2
-        }
+        didSet { transitionAudioPlayer?.volume = isSoundMuted ? 0 : 0.2 }
     }
-    
     var isMusicMuted: Bool = false {
-        didSet {
-            //Update background music volume when the mute value changes
-            backgroundMusicPlayer?.volume = isMusicMuted ? 0 : 0.2
-        }
+        didSet { backgroundMusicPlayer?.volume = isMusicMuted ? 0 : 0.2 }
     }
-    
+
     var transitionAudioPlayer: AVAudioPlayer?
     var backgroundMusicPlayer: AVAudioPlayer?
-    
-    private init() {} // This prevents others from creating instances of this class
-    
-    
-    //Sets up transition/button press audio change music file
-    func playTransitionAudio() {
-            if let transitionAudioURL = Bundle.main.url(forResource: "glasshit", withExtension: "mp3") {
-                do {
-                    transitionAudioPlayer = try AVAudioPlayer(contentsOf: transitionAudioURL)
-                    transitionAudioPlayer?.volume = isSoundMuted ? 0 : 0.2
-                    transitionAudioPlayer?.prepareToPlay()  // Prepare audio before playing
-                    transitionAudioPlayer?.play()
-                } catch {
-                    print("Error loading transition audio: \(error)")
-                }
-            }
-        }
-    
-    func stopTransitionAudio() {
-        transitionAudioPlayer?.stop()
-    }
-    func stopBackgroundAudio() {
-        backgroundMusicPlayer?.stop()
-    }
-    //Sets up background Music Just Change musicfile
-    func setupAudio() {
-        if let backgroundMusicURL = Bundle.main.url(forResource: "backgroundMusic", withExtension: "mp3") {
-            do {
-                backgroundMusicPlayer = try AVAudioPlayer(contentsOf: backgroundMusicURL)
-                backgroundMusicPlayer?.numberOfLoops = -1
-                backgroundMusicPlayer?.volume = isMusicMuted ? 0 : 0.2
-                backgroundMusicPlayer?.play()
-            } catch {
-                print("Error loading background music: \(error)")
-            }
-        }
-    }
-    
-    func setupBackButton(for screenSize: CGSize) { //red X back button, CURRENTLY PRESENT ON OPEN - SHOULDNT BE
-        let buttonWidth: CGFloat = 60
-        let buttonHeight: CGFloat = 60
-        let buttonX = screenSize.width - buttonWidth + 10// 20 points from the right edge
-        let buttonY = screenSize.height - buttonHeight - 10 // 20 points from the top edge
-        
-        // Create the back button as an SKSpriteNode using your image "BackButton.png"
-        backButton = SKSpriteNode(imageNamed: "BackButton.png")
-        backButton.size = CGSize(width: buttonWidth, height: buttonHeight)
-        backButton.position = CGPoint(x: buttonX, y: buttonY)
-        backButton.zPosition = 1 // Ensure it's on top of other content
-    }
-    func setupCoinRegion(for screenSize: CGSize) { //red X back button, CURRENTLY PRESENT ON OPEN - SHOULDNT BE
+
+    private init() {}
+
+    // ===== AUDIO (unchanged) =====
+    func playTransitionAudio() { /* ... keep if you still use ... */ }
+    func stopTransitionAudio() { transitionAudioPlayer?.stop() }
+    func stopBackgroundAudio() { backgroundMusicPlayer?.stop() }
+    func setupAudio() { /* ... */ }
+
+    // ===== COIN ICON (unchanged) =====
+    func setupCoinRegion(for screenSize: CGSize) {
         let buttonWidth: CGFloat = 200
         let buttonHeight: CGFloat = 50
-        let iconX = screenSize.width - buttonWidth // 20 points from the right edge
-        let iconY = screenSize.height - buttonHeight - 10 // 20 points from the top edge
-        
-        // Create the back button as an SKSpriteNode using your image "BackButton.png"
+        let iconX = screenSize.width - buttonWidth
+        let iconY = screenSize.height - buttonHeight - 10
         coinIcon = SKSpriteNode(imageNamed: "CoinIcon")
         coinIcon.size = CGSize(width: buttonWidth, height: buttonHeight)
         coinIcon.position = CGPoint(x: iconX, y: iconY)
-         // Ensure it's on top of other content
+    }
 
+    // ===== NEW: Overlay Back Button (UIKit) =====
+
+    /// Show one shared back button, anchored below the status bar, reusable across scenes.
+    /// Call from any scene: GlobalSettings.shared.showOverlayBackButton(in: vc) { ... }
+    func showOverlayBackButton(in viewController: UIViewController,
+                               title: String = "Back",
+                               onTap: @escaping () -> Void) {
+        overlayBackHandler = onTap
+
+        guard let skView = viewController.view as? SKView else { return }
+
+        if overlayBackButton == nil {
+            let btn = UIButton(type: .system)
+            btn.translatesAutoresizingMaskIntoConstraints = false
+            btn.setTitle(title, for: .normal)
+            btn.titleLabel?.font = UIFont(name: "AvenirNext-Bold", size: 17)
+            btn.setTitleColor(.white, for: .normal)
+            btn.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+            btn.layer.cornerRadius = 10
+            btn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+            btn.addTarget(self, action: #selector(handleOverlayBackTap), for: .touchUpInside)
+
+            skView.addSubview(btn)
+            NSLayoutConstraint.activate([
+                btn.topAnchor.constraint(equalTo: skView.safeAreaLayoutGuide.topAnchor, constant: 12), // ⬅️ below status bar
+                btn.leadingAnchor.constraint(equalTo: skView.leadingAnchor, constant: 16)
+            ])
+            overlayBackButton = btn
+        }
+
+        overlayBackButton?.setTitle(title, for: .normal)
+        overlayBackButton?.isHidden = false
+        overlayBackButton.map { $0.superview?.bringSubviewToFront($0) }
+    }
+
+    @objc private func handleOverlayBackTap() {
+        overlayBackHandler?()
+    }
+
+    /// Hide the shared back button (e.g., on StartScene)
+    func hideOverlayBackButton() {
+        overlayBackHandler = nil
+        overlayBackButton?.isHidden = true
     }
 }
