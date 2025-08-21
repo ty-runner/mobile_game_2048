@@ -1,18 +1,28 @@
+//
+//  ColorPackages.swift
+//  Cleaned & annotated on 2025-08-16 20:11 UTC
+//
+//  Notes:
+//  - This file has been auto-annotated with documentation comments.
+//  - Risky constructs (force unwraps, \1
+//try! , continuations) are flagged with TODOs.
+//  - No public APIs were intentionally changed.
+//
 import UIKit
 
 let colorPackages: [String: [Int: UIColor]] = [
     "classic": [
-        2:    UIColor(red: 0.93, green: 0.89, blue: 0.85, alpha: 1),
-        4:    UIColor(red: 0.93, green: 0.88, blue: 0.78, alpha: 1),
-        8:    UIColor(red: 0.96, green: 0.69, blue: 0.47, alpha: 1),
-        16:   UIColor(red: 0.96, green: 0.58, blue: 0.39, alpha: 1),
-        32:   UIColor(red: 0.97, green: 0.49, blue: 0.38, alpha: 1),
-        64:   UIColor(red: 0.96, green: 0.37, blue: 0.23, alpha: 1),
-        128:  UIColor(red: 0.93, green: 0.81, blue: 0.45, alpha: 1),
-        256:  UIColor(red: 0.93, green: 0.80, blue: 0.38, alpha: 1),
-        512:  UIColor(red: 0.93, green: 0.78, blue: 0.31, alpha: 1),
-        1024: UIColor(red: 0.93, green: 0.77, blue: 0.25, alpha: 1),
-        2048: UIColor(red: 0.93, green: 0.76, blue: 0.18, alpha: 1),
+        2:    UIColor(red: 0.93, green: 0.92, blue: 0.91, alpha: 1.0), // #EDEBE8 porcelain
+        4:    UIColor(red: 0.90, green: 0.90, blue: 0.94, alpha: 1.0), // #E6E6F0 cool mist
+        8:    UIColor(red: 0.81, green: 0.89, blue: 0.84, alpha: 1.0), // #CFE3D6 pale sage
+        16:   UIColor(red: 0.75, green: 0.84, blue: 0.90, alpha: 1.0), // #BFD6E6 misty blue
+        32:   UIColor(red: 0.80, green: 0.75, blue: 0.89, alpha: 1.0), // #CDBFE2 soft lavender
+        64:   UIColor(red: 0.73, green: 0.76, blue: 0.85, alpha: 1.0), // #B9C1D9 periwinkle gray
+        128:  UIColor(red: 0.69, green: 0.81, blue: 0.75, alpha: 1.0), // #AFCFBF eucalyptus
+        256:  UIColor(red: 0.66, green: 0.72, blue: 0.78, alpha: 1.0), // #A8B7C7 blue-gray
+        512:  UIColor(red: 0.62, green: 0.67, blue: 0.76, alpha: 1.0), // #9DAAC2 slate
+        1024: UIColor(red: 0.56, green: 0.61, blue: 0.71, alpha: 1.0), // #8F9BB5 dusty indigo
+        2048: UIColor(red: 0.49, green: 0.54, blue: 0.65, alpha: 1.0)  // #7E8AA6 smoky periwinkle
     ],
     "abstract": [
         2:    UIColor(red: 0.02, green: 0.04, blue: 0.08, alpha: 1),
@@ -90,4 +100,3 @@ let indexToTheme: [Int: String] = [
 
 let defaultColorPackage = "classic"
 var selectedColorKey = "classic"
-

@@ -18,6 +18,7 @@ class GameScene: SKScene {
     let spacing: CGFloat = 10   // Space between tiles
     var touchStart: CGPoint?
     var scoreRegion: ScoreRegion!
+    var highScoreLabel: SKLabelNode! // Add this line
     var gameOverShown = false
     
     var watchAD: SKSpriteNode!
@@ -34,63 +35,95 @@ class GameScene: SKScene {
         GlobalSettings.shared.setupAudio()
 
         do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: .mixWithOthers)
-            try? AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
-            try AVAudioSession.sharedInstance().setActive(true)
-        } catch {
-            print("Failed to set up AVAudioSession: \(error)")
-        }
-        
-        // Get the selected video name from the ThemeManager
-        let selectedVideoName = ThemeManager.selectedVideo
-        
-        // Use your VideoHelper to play the background video.
-        // It will now use the video associated with the current theme.
-        videoNode = VideoHelper.playBackgroundVideo(on: self, named: selectedVideoName)
-        
-        // If the video helper returns nil (because the file wasn't found),
-       // use a static image as a fallback.
-       if videoNode == nil {
-           let staticBackground = SKSpriteNode(imageNamed: selectedVideoName)
-           staticBackground.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
-           staticBackground.size = self.size
-           staticBackground.zPosition = -1
-           addChild(staticBackground)
-       }
+                try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: .mixWithOthers)
+                try? AVAudioSession.sharedInstance().overrideOutputAudioPort(.speaker)
+                try AVAudioSession.sharedInstance().setActive(true)
+            } catch {
+                print("Failed to set up AVAudioSession: \(error)")
+            }
 
-        //reset score
-        GameData.shared.score = 0;
-        scoreRegion = ScoreRegion(score: GameData.shared.score)
-        scoreRegion.position = CGPoint(x: size.width / 2.2, y: size.height - 100)
-        scoreRegion.name = "scoreRegion"
-        addChild(scoreRegion)
-        // Positioning
-        /*background.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
-        background.size = CGSize(width: size.width, height: size.height)
-        background.zPosition = -1
-        addChild(background)*/
+            // Reset current score for new game
+            GameData.shared.score = 0
+
+            // Setup ScoreRegion
+            scoreRegion = ScoreRegion(score: GameData.shared.score)
+            scoreRegion.position = CGPoint(x: size.width / 2.2, y: size.height - 140)
+            scoreRegion.name = "scoreRegion"
+            addChild(scoreRegion)
+
+            // High score label
+            highScoreLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
+            highScoreLabel.fontSize = 24
+            highScoreLabel.fontColor = .white
+            highScoreLabel.position = CGPoint(x: self.size.width / 2, y: self.size.height - 100)
+            highScoreLabel.zPosition = 10
+            addChild(highScoreLabel)
+
+            // Load CloudKit data asynchronously
+            Task {
+                do {
+                    try await CloudKitManager.shared.loadStatsIntoGameData()
+                    await MainActor.run {
+                        self.highScoreLabel.text = "HIGHSCORE: \(GameData.shared.highscore)"
+                    }
+                } catch {
+                    print("Failed to load player data from CloudKit: \(error.localizedDescription)")
+                    await MainActor.run {
+                        self.highScoreLabel.text = "HIGHSCORE: 0"
+                    }
+                }
+            }
+
+            // Setup boards and spawn tiles
+            setupBoards()
+            spawnInitialTiles()
+            redrawBoards()
         
-        setupBoards()
-        spawnInitialTiles()
-        redrawBoards()
-        
-        //showGameOver() //GET RID OF THIS FUNCTION ONLY FOR TESTING AD AND GAME OVER SCENE
-        
-        let backButton = SKLabelNode(text: "⟵ Back")
-        backButton.fontName = "AvenirNext-Bold"
-        backButton.fontSize = 24
-        backButton.fontColor = .white
-        backButton.position = CGPoint(x: 60, y: size.height - 50)
-        backButton.name = "backButton"
-        backButton.zPosition = 10
-        addChild(backButton)
-    }
+        // 🔙 Global overlay back button (safe-area aware, consistent across scenes)
+        if let vc = viewController {
+            GlobalSettings.shared.showOverlayBackButton(in: vc, title: "Back") { [weak self] in
+                guard let self, let vc = self.viewController else { return }
+                let start = StartScene(size: self.size)
+                start.viewController = vc
+                start.scaleMode = self.scaleMode
+                let t = SKTransition.fade(withDuration: 0.5)
+                vc.presentScene(start, transition: t, transitionDuration: 0.5)
+            }
+        }
+
+            // Setup background video
+            let selectedVideoName = ThemeManager.selectedVideo
+            Task { [weak self] in
+                guard let self = self else { return }
+                self.videoNode = await VideoHelper.playBackgroundVideo(on: self, named: selectedVideoName)
+                if self.videoNode == nil {
+                    let staticBackground = SKSpriteNode(imageNamed: selectedVideoName)
+                    staticBackground.position = CGPoint(x: self.size.width / 2, y: self.size.height / 2)
+                    staticBackground.size = self.size
+                    staticBackground.zPosition = -1
+                    self.addChild(staticBackground)
+                }
+            }
+        }
 
     // Called every frame. Checks if both boards are in a game over state.
     override func update(_ currentTime: TimeInterval) {
         if !gameOverShown && isGameOver(board1) && isGameOver(board2) {
             gameOverShown = true
-            GameData.shared.coins += Int(Double(GameData.shared.score) * 0.01)
+            // Add coins based on final score
+            let coinsEarned = Int(Double(GameData.shared.score) * 0.01)
+            GameData.shared.coins += coinsEarned
+            
+            // Persist new coins + score to CloudKit
+            Task {
+                // Update high score if the current score is higher
+                await CloudKitManager.shared.updateHighScoreIfNeeded(GameData.shared.score)
+                await CloudKitManager.shared.saveAllFromGameData()
+                
+                await MainActor.run {
+                    self.highScoreLabel.text = "HIGHSCORE: \(GameData.shared.highscore)"
+                }
+            }
             showGameOver()
         }
     }
@@ -252,12 +285,13 @@ class GameScene: SKScene {
     // Initializes and draws both game boards.
     func setupBoards() {
         backgroundColor = .black
-        let boardSpacing: CGFloat = size.height * 0.25 //was 0.10
+        let boardSpacing: CGFloat = 30 // Spacing between the two boards
         let boardX: CGFloat = size.width * 0.5
-        let boardY: CGFloat = size.height * 0.5
+        let board1Y: CGFloat = size.height * 0.29 // Adjusted y-position for board 1
+        let board2Y: CGFloat = board1Y + (tileSize * 4 + spacing * 3) + boardSpacing // Position board 2 above board 1
         
-        drawBoard(board1, at: CGPoint(x: 0, y: boardY), boardName: "board1")
-        drawBoard(board2, at: CGPoint(x: boardX, y: boardY + boardSpacing), boardName: "board2")
+        drawBoard(board1, at: CGPoint(x: boardX, y: board1Y), boardName: "board1")
+        drawBoard(board2, at: CGPoint(x: boardX, y: board2Y), boardName: "board2")
     }
     func countDigits(of number: Int) -> Int {
         let absNumber = abs(number)  // Handle negative numbers
@@ -348,16 +382,14 @@ class GameScene: SKScene {
         let tappedNodes = nodes(at: touchEnd)
         for node in tappedNodes {
             if node.name == "restartButton" {
+                // Restart game → reset score
+                GameData.shared.score = 0
+                scoreRegion.updateScore(to: 0)
+                
                 let newScene = GameScene(size: size)
                 newScene.viewController = self.viewController //NECESSARY TO RESET VIEW CONTROLLER ANYTIME TRANSITIONING FROM SCENES FOR ADS
                 newScene.scaleMode = scaleMode
                 view?.presentScene(newScene, transition: SKTransition.fade(withDuration: 0.5))
-                return
-            } else if node.name == "backButton" {
-                let startScene = StartScene(size: size)
-                startScene.viewController = self.viewController //NECESSARY TO RESET VIEW CONTROLLER ANYTIME TRANSITIONING FROM SCENES FOR ADS
-                startScene.scaleMode = scaleMode
-                view?.presentScene(startScene, transition: SKTransition.fade(withDuration: 0.5))
                 return
             } else if let spriteNode = node as? SKSpriteNode {
                 if spriteNode.name == "watchAD", countdownTime > 0 {
@@ -501,7 +533,12 @@ class GameScene: SKScene {
 
         // Redraws both boards after a move to reflect the current state.
         func redrawBoards() {
-            drawBoard(board1, at: CGPoint(x: size.width * 0.5, y: size.height * 0.35), boardName: "board1")
-            drawBoard(board2, at: CGPoint(x: size.width * 0.5, y: size.height * 0.7), boardName: "board2")
+            let boardSpacing: CGFloat = 30 // This must match the spacing in setupBoards()
+            let boardX: CGFloat = size.width * 0.5
+            let board1Y: CGFloat = size.height * 0.29
+            let board2Y: CGFloat = board1Y + (tileSize * 4 + spacing * 3) + boardSpacing
+            
+            drawBoard(board1, at: CGPoint(x: boardX, y: board1Y), boardName: "board1")
+            drawBoard(board2, at: CGPoint(x: boardX, y: board2Y), boardName: "board2")
         }
     }

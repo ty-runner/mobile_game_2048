@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1DFDD7A12DD56CAB00888CDD /* mobile-game-2048-iOS-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1DFDD7A02DD56C9600888CDD /* mobile-game-2048-iOS-Info.plist */; };
+		7B6D23382E50049600C26EE8 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B6D23372E50049600C26EE8 /* StoreKit.framework */; };
 		7BB241A62DAF318200CC2722 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 7BB241A52DAF318200CC2722 /* GoogleMobileAds */; };
 		7CDFF663B1947A807C392302 /* Pods_mobile_game_2048_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB2E9A16A8DB28C4EB381C94 /* Pods_mobile_game_2048_iOS.framework */; };
 		A8064841A205C749EEBF6BF1 /* Pods_mobile_game_2048_tvOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D849C18B74573EB7D9E0B8E /* Pods_mobile_game_2048_tvOS.framework */; };
@@ -23,6 +24,7 @@
 		3BBD8FF2260501211C81D847 /* Pods-mobile_game_2048 macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobile_game_2048 macOS.debug.xcconfig"; path = "Target Support Files/Pods-mobile_game_2048 macOS/Pods-mobile_game_2048 macOS.debug.xcconfig"; sourceTree = "<group>"; };
 		6CF5D6E3B829A3AC3DC946C5 /* Pods_mobile_game_2048_macOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mobile_game_2048_macOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7569B76AF366951ED20B5BE9 /* Pods-mobile_game_2048 tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobile_game_2048 tvOS.debug.xcconfig"; path = "Target Support Files/Pods-mobile_game_2048 tvOS/Pods-mobile_game_2048 tvOS.debug.xcconfig"; sourceTree = "<group>"; };
+		7B6D23372E50049600C26EE8 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/StoreKit.framework; sourceTree = DEVELOPER_DIR; };
 		8E6F6B3979D32EF8966D1FD7 /* Pods-mobile_game_2048 iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobile_game_2048 iOS.release.xcconfig"; path = "Target Support Files/Pods-mobile_game_2048 iOS/Pods-mobile_game_2048 iOS.release.xcconfig"; sourceTree = "<group>"; };
 		9D849C18B74573EB7D9E0B8E /* Pods_mobile_game_2048_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mobile_game_2048_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE32D07C87961825B4981379 /* Pods-mobile_game_2048 iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobile_game_2048 iOS.debug.xcconfig"; path = "Target Support Files/Pods-mobile_game_2048 iOS/Pods-mobile_game_2048 iOS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -32,25 +34,18 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		1D0C7F462DFDD5D900BEE08E /* Exceptions for "mobile_game_2048 iOS" folder in "mobile_game_2048 tvOS" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				VideoHelper.swift,
-			);
-			target = 1D34417D2D825B820027D2F0 /* mobile_game_2048 tvOS */;
-		};
-		1D0C7F472DFDD5D900BEE08E /* Exceptions for "mobile_game_2048 iOS" folder in "mobile_game_2048 macOS" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				VideoHelper.swift,
-			);
-			target = 1D34418D2D825B820027D2F0 /* mobile_game_2048 macOS */;
-		};
 		1D3441A82D825B820027D2F0 /* Exceptions for "mobile_game_2048 Shared" folder in "mobile_game_2048 tvOS" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Actions.sks,
 				Assets.xcassets,
+				Backgrounds/8bit.mp4,
+				Backgrounds/Abstract.mp4,
+				Backgrounds/CoralCove.mp4,
+				Backgrounds/Cyberpunk.mp4,
+				Backgrounds/Default.png,
+				CloudKitManager.swift,
+
 				GameScene.sks,
 				GameScene.swift,
 			);
@@ -61,6 +56,13 @@
 			membershipExceptions = (
 				Actions.sks,
 				Assets.xcassets,
+				Backgrounds/8bit.mp4,
+				Backgrounds/Abstract.mp4,
+				Backgrounds/CoralCove.mp4,
+				Backgrounds/Cyberpunk.mp4,
+				Backgrounds/Default.png,
+				CloudKitManager.swift,
+
 				GameScene.sks,
 				GameScene.swift,
 			);
@@ -80,10 +82,6 @@
 		};
 		1D34416F2D825B820027D2F0 /* mobile_game_2048 iOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				1D0C7F462DFDD5D900BEE08E /* Exceptions for "mobile_game_2048 iOS" folder in "mobile_game_2048 tvOS" target */,
-				1D0C7F472DFDD5D900BEE08E /* Exceptions for "mobile_game_2048 iOS" folder in "mobile_game_2048 macOS" target */,
-			);
 			path = "mobile_game_2048 iOS";
 			sourceTree = "<group>";
 		};
@@ -104,6 +102,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B6D23382E50049600C26EE8 /* StoreKit.framework in Frameworks */,
 				7BB241A62DAF318200CC2722 /* GoogleMobileAds in Frameworks */,
 				7CDFF663B1947A807C392302 /* Pods_mobile_game_2048_iOS.framework in Frameworks */,
 			);
@@ -156,6 +155,7 @@
 		5A6C233E8E8D16E01641F121 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7B6D23372E50049600C26EE8 /* StoreKit.framework */,
 				BB2E9A16A8DB28C4EB381C94 /* Pods_mobile_game_2048_iOS.framework */,
 				6CF5D6E3B829A3AC3DC946C5 /* Pods_mobile_game_2048_macOS.framework */,
 				9D849C18B74573EB7D9E0B8E /* Pods_mobile_game_2048_tvOS.framework */,
@@ -441,9 +441,8 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -474,9 +473,8 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

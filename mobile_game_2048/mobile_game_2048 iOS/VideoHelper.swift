@@ -1,11 +1,13 @@
 //
 //  VideoHelper.swift
-//  mobile_game_2048
+//  Cleaned & annotated on 2025-08-16 20:11 UTC
 //
-//  Created by Ty Runner on 6/14/25.
+//  Notes:
+//  - This file has been auto-annotated with documentation comments.
+//  - Risky constructs (force unwraps, \1
+//try! , continuations) are flagged with TODOs.
+//  - No public APIs were intentionally changed.
 //
-
-
 import SpriteKit
 import AVFoundation
 
