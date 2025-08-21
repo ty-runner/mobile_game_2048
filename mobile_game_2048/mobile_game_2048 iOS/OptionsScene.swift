@@ -77,6 +77,7 @@ class OptionsScene: SKScene {
         // If you want theme toggle back, uncomment:
         /*
         themeToggleButton = createToggleButton(
+
             text: "Toggle Theme",
             name: "toggleTheme",
             yPos: size.height * 0.36,
@@ -87,7 +88,6 @@ class OptionsScene: SKScene {
 
         addChild(musicToggleButton)
         addChild(soundToggleButton)
-        // addChild(themeToggleButton)
 
         // Logout button
         let logoutButton = SKLabelNode(text: "Log Out of Game Center")
@@ -141,7 +141,7 @@ class OptionsScene: SKScene {
         let button = SKShapeNode(rectOf: CGSize(width: 250, height: 50), cornerRadius: 12)
         button.fillColor = fillColor
         button.strokeColor = strokeColor
-        button.glowWidth = 2
+        button.glowWidth = 2         // white glow halo
         button.lineWidth = 2
         button.name = name
         button.position = CGPoint(x: size.width / 2, y: yPos)
@@ -157,6 +157,7 @@ class OptionsScene: SKScene {
 
         return button
     }
+
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
