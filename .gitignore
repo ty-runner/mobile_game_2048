@@ -11,6 +11,7 @@ Pods/
 *.log
 *.tmp
 *.swp
+*.zip
 # Other
 *.xcuserstate
 *.pbxuser
